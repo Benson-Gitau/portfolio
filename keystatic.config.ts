@@ -51,6 +51,7 @@ export default config({
       columns: ['type', 'industry', 'order'],
       schema: {
         title: fields.slug({ name: { label: 'Title', description: 'Outcome headline.' } }),
+        accentWord: text('Accent word', 'One word from the title, set in the accent style on the project page.'),
         type: fields.select({
           label: 'Type',
           options: [{ label: 'Demo', value: 'demo' }, { label: 'Client', value: 'client' }],
@@ -261,6 +262,20 @@ export default config({
         siteUrl: text('Site URL'),
         defaultShareImage: image('Default share image'),
         analyticsSnippet: longText('Analytics snippet', 'Optional.'),
+        caseStudy: fields.object(
+          {
+            allWork: text('Link back to work'),
+            builtFor: text('Client prefix'),
+            problem: text('Problem heading'),
+            system: text('System heading'),
+            results: text('Results heading'),
+            designedTo: text('Designed-to heading'),
+            tools: text('Tools heading'),
+            demoVideo: text('Demo video heading'),
+            gallery: text('Gallery heading'),
+          },
+          { label: 'Project page labels' },
+        ),
         footerRole: text('Footer role'),
         footerLocation: text('Footer location'),
       },

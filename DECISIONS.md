@@ -70,3 +70,12 @@ Benson approved **Direction A, The Reconciliation, with Direction C's notificati
 | Projects with no cover show their first steps as a ledger | Real content rather than a stand-in image. A cover replaces it when supplied |
 | Book buttons are links to `#contact` that open the modal with JavaScript | Booking still works without JavaScript |
 | `settings.ghlEmbedScriptUrl` is a setting, empty until supplied | The script URL could not be confirmed from official docs, so it comes from Benson's embed code |
+
+## Phase 5: case studies
+
+| Decision | Why |
+| --- | --- |
+| Project pages have an `accentWord` field rather than `*word*` in the title | Titles also appear on cards and in meta tags, where markers would show |
+| Section labels on project pages live in `settings.caseStudy` | The spec names the sections but gives copy only for "What it's designed to do". No page text is hard-coded |
+| Added an "All work" link above the type label | The spec's layout has no way back to the grid apart from the nav |
+| Optional `body` narrative sits after results or designed-to | The spec's layout does not place it |

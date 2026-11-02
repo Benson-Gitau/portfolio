@@ -3,8 +3,8 @@ email: bensonkgitau@gmail.com
 linkedinUrl: https://www.linkedin.com/in/benson-gitau-b89b6b191/
 githubUrl: https://github.com/BennyGitau
 xUrl: https://x.com/benny_gitau
-agencyName: '[AGENCY NAME]'
-agencyUrl: '[AGENCY URL]'
+agencyName: Codevant Solutions
+agencyUrl: https://codevantsolutions.com/
 siteUrl: '[SITE_URL]'
 defaultShareImage:
   image: null
@@ -13,3 +13,13 @@ analyticsSnippet: ''
 footerRole: Automation & AI systems
 footerLocation: Nairobi, working worldwide
 ghlEmbedScriptUrl: ''
+caseStudy:
+  allWork: All work
+  builtFor: Built for
+  problem: The problem
+  system: The system
+  results: Results
+  designedTo: What it's designed to do
+  tools: Tools
+  demoVideo: Demo video
+  gallery: Gallery

@@ -1,4 +1,5 @@
 import type { ImageMetadata } from 'astro';
+import Markdoc from '@markdoc/markdoc';
 import { createReader } from '@keystatic/core/reader';
 import keystaticConfig from '../../keystatic.config';
 
@@ -53,6 +54,12 @@ export async function getToolsStrip() {
   return (await getSkills()).filter((skill) => skill.showInToolsStrip);
 }
 
+async function renderBody(body: () => Promise<{ node: Parameters<typeof Markdoc.transform>[0] }>) {
+  const { node } = await body();
+  const html = Markdoc.renderers.html(Markdoc.transform(node));
+  return html.replace(/<[^>]+>/g, '').trim() ? html : '';
+}
+
 export async function getProjects() {
   const [all, skills] = await Promise.all([reader.collections.projects.all(), getSkills()]);
   const nameBySlug = new Map(skills.map((skill) => [skill.slug, skill.name]));
@@ -83,8 +90,16 @@ export async function getProjects() {
             return name ? [name] : [];
           }),
           cover: await resolveImage(entry.coverImage, `${slug} cover`),
+          gallery: (
+            await Promise.all(
+              entry.gallery.map(async (item, i) => {
+                const resolved = await resolveImage(item, `${slug} gallery ${i + 1}`);
+                return resolved ? { ...resolved, caption: item.caption } : null;
+              }),
+            )
+          ).filter((item) => item !== null),
           demoVideo: entry.demoVideo.discriminant ? entry.demoVideo.value : null,
-          readBody: body,
+          bodyHtml: await renderBody(body),
         };
       }),
   );

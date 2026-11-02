@@ -1,0 +1,287 @@
+---
+import { Image } from 'astro:assets';
+import Heading from '../../components/Heading.astro';
+import Placeholder from '../../components/Placeholder.astro';
+import Testimonials from '../../components/Testimonials.astro';
+import Tick from '../../components/Tick.astro';
+import VideoLite from '../../components/VideoLite.astro';
+import Results from '../../components/work/Results.astro';
+import SystemDiagram from '../../components/work/SystemDiagram.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { getHome, getProjects, getProjectTestimonials, getSettings } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+}
+
+const { project } = Astro.props as { project: Awaited<ReturnType<typeof getProjects>>[number] };
+const [settings, home, testimonials] = await Promise.all([getSettings(), getHome(), getProjectTestimonials(project.slug)]);
+const labels = settings.caseStudy;
+const client = project.clientName ?? project.clientDescriptor;
+const headline = project.accentWord ? project.title.replace(project.accentWord, `*${project.accentWord}*`) : project.title;
+const hasMedia = Boolean(project.demoVideo) || project.gallery.length > 0;
+---
+
+<SiteLayout title={`${project.title} — Benson Gitau`} description={project.summary}>
+  <article>
+    <header class="head wrap">
+      <a class="back" href="/#work">{labels.allWork}</a>
+      <p class="meta">
+        <span class:list={['mono-label', project.isDemo ? 'demo' : 'client']}>{project.typeLabel}</span>
+        <span class="industry">{project.industry}</span>
+        {client && <span class="industry">{labels.builtFor} {client}</span>}
+      </p>
+      <Heading as="h1" text={headline} />
+      <p class="summary">{project.summary}</p>
+    </header>
+
+    <section class="problem section wrap">
+      <h2 class="label"><Tick open class="open" />{labels.problem}</h2>
+      <p class="statement">{project.problem}</p>
+    </section>
+
+    <section class="system section wrap">
+      <h2 class="h2 sticky">{labels.system}</h2>
+      <SystemDiagram steps={project.steps} />
+    </section>
+
+    {project.isDemo ? (
+      <section class="designed">
+        <div class="section wrap">
+          <p class="mono-label demo">{project.typeLabel}</p>
+          <h2 class="h2">{labels.designedTo}</h2>
+          <p class="statement">{project.designedTo}</p>
+        </div>
+      </section>
+    ) : (
+      <Results heading={labels.results} results={project.results} note={project.resultsNote} />
+    )}
+
+    {project.bodyHtml && <div class="body wrap section" set:html={project.bodyHtml} />}
+
+    {project.toolNames.length > 0 ? (
+      <section class="tools wrap">
+        <h2 class="label">{labels.tools}</h2>
+        <ul>{project.toolNames.map((tool) => <li class="chip">{tool}</li>)}</ul>
+      </section>
+    ) : (
+      import.meta.env.DEV && <section class="tools wrap"><Placeholder text={`[TOOLS: ${project.slug}]`} /></section>
+    )}
+
+    {hasMedia && (
+      <div class="media section wrap">
+        {project.demoVideo && (
+          <section>
+            <h2 class="h2">{labels.demoVideo}</h2>
+            <p class="mono-label demo video-label">{project.typeLabel}</p>
+            <div class="video-wrap"><VideoLite video={project.demoVideo} sizes="(min-width: 1024px) 56rem, 100vw" /></div>
+          </section>
+        )}
+        {project.gallery.length > 0 && (
+          <section>
+            <h2 class="h2">{labels.gallery}</h2>
+            <div class="gallery">
+              {project.gallery.map((item) => (
+                <figure>
+                  <Image src={item.src} alt={item.alt} widths={[480, 800, 1200]} sizes="(min-width: 768px) 50vw, 100vw" format="webp" />
+                  {item.caption && <figcaption>{item.caption}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    )}
+
+    <Testimonials heading={home.proof.heading} items={testimonials} />
+
+    <section class="closing section wrap">
+      <p class="cta">{project.cta}</p>
+      <a class="btn btn-primary" href="/#contact" data-book>{home.hero.primaryCta}</a>
+    </section>
+  </article>
+</SiteLayout>
+
+<style>
+  .head {
+    padding-top: 1.5rem;
+    padding-bottom: clamp(3rem, 6vw, 5rem);
+  }
+  .back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin-top: 1rem;
+    max-width: none;
+  }
+  .demo {
+    color: var(--teal-text);
+  }
+  .client {
+    color: var(--accent-text);
+  }
+  .industry {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+  .head :global(h1) {
+    margin-top: 1rem;
+    max-width: 22ch;
+    font-size: clamp(2.25rem, 6vw, 5.25rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+  .head :global(h1 .accent-word) {
+    color: var(--accent-text);
+    white-space: nowrap;
+  }
+  .summary {
+    margin-top: 1.5rem;
+    max-width: 60ch;
+    font-size: 1.125rem;
+  }
+  .label {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 1.125rem;
+    letter-spacing: -0.01em;
+  }
+  .label :global(.open) {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--danger);
+  }
+  .statement {
+    max-width: 34ch;
+    font-family: var(--font-geist);
+    font-size: clamp(1.5rem, 3.2vw, 2.75rem);
+    font-weight: 500;
+    line-height: 1.18;
+    letter-spacing: -0.025em;
+  }
+  .problem {
+    display: grid;
+    gap: 1.25rem;
+    border-top: 1px solid var(--rule);
+    padding-block: clamp(3rem, 7vw, 6rem);
+  }
+  .system {
+    display: grid;
+    gap: 2rem;
+    padding-top: 0;
+  }
+  .designed {
+    background: var(--surface);
+  }
+  .designed .h2 {
+    margin-top: 0.75rem;
+  }
+  .designed .statement {
+    margin-top: 2rem;
+    font-size: clamp(1.25rem, 2.4vw, 2rem);
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    max-width: 44ch;
+  }
+  .body :global(p) {
+    margin-top: 1rem;
+    max-width: 65ch;
+  }
+  .body :global(h2),
+  .body :global(h3) {
+    margin-top: 2rem;
+  }
+  .body :global(a) {
+    text-decoration: underline;
+  }
+  .tools {
+    padding-block: 2.5rem;
+  }
+  .tools ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .media {
+    display: grid;
+    gap: clamp(3rem, 6vw, 5rem);
+    padding-top: 2.5rem;
+  }
+  .video-label {
+    margin-block: 0.5rem 1.5rem;
+  }
+  .video-wrap {
+    max-width: 56rem;
+  }
+  .media .h2 + .gallery {
+    margin-top: 2rem;
+  }
+  .gallery {
+    display: grid;
+    gap: 1rem;
+  }
+  figure {
+    margin: 0;
+  }
+  figure :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+  }
+  figcaption {
+    margin-top: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+  }
+  .closing {
+    display: grid;
+    justify-items: start;
+    gap: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+  .cta {
+    max-width: 26ch;
+    font-family: var(--font-geist);
+    font-size: clamp(1.75rem, 4.6vw, 4rem);
+    font-weight: 600;
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+  }
+  @media (min-width: 768px) {
+    .gallery {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .problem,
+    .system {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      gap: clamp(2rem, 4vw, 4rem);
+      align-items: start;
+    }
+    .sticky {
+      position: sticky;
+      top: 6rem;
+    }
+    .label {
+      margin-top: 0.5rem;
+    }
+    .closing {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+    }
+  }
+</style>
