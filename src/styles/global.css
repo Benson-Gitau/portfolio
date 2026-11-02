@@ -167,7 +167,6 @@
 
   .section {
     padding-block: var(--space-section);
-    scroll-margin-top: 4rem;
   }
 
   .h2 {

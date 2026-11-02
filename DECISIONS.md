@@ -79,3 +79,13 @@ Benson approved **Direction A, The Reconciliation, with Direction C's notificati
 | Section labels on project pages live in `settings.caseStudy` | The spec names the sections but gives copy only for "What it's designed to do". No page text is hard-coded |
 | Added an "All work" link above the type label | The spec's layout has no way back to the grid apart from the nav |
 | Optional `body` narrative sits after results or designed-to | The spec's layout does not place it |
+
+## Phase 6: med spa page
+
+| Decision | Why |
+| --- | --- |
+| Nav button reads "Book a call"; page buttons read "Book a 15-minute walkthrough". Both open the same modal | The routes table names the nav as "logo + Book a call only", and the long label does not fit beside the logo on a phone |
+| No theme toggle on this page | "Logo + Book a call only". A saved choice or the system setting still applies |
+| `?spa=` is applied by a small inline script straight after the eyebrow | The page is static, and running it there avoids a flash of the default text |
+| A name with any disallowed character falls back to the default eyebrow; a valid long name is cut to 40 characters | Spec's sanitising rule. Letters from any alphabet count, so "Zoë" works |
+| Video heading is the demo's title | The spec's demo section has no heading, and the section needs one for screen readers |

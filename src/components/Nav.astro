@@ -1,6 +1,11 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
 
+interface Props {
+  minimal?: boolean;
+}
+const { minimal = false } = Astro.props;
+
 const links = [
   { href: '/#work', label: 'Work' },
   { href: '/#services', label: 'Services' },
@@ -11,22 +16,26 @@ const links = [
 
 <div class="nav-shell" data-nav>
   <header class="bar glass">
-    <a class="brand" href="/#top">Benson Gitau</a>
-    <nav aria-label="Main" class="links">
-      {links.map((link) => <a href={link.href}>{link.label}</a>)}
-    </nav>
+    <a class="brand" href={minimal ? '/' : '/#top'}>Benson Gitau</a>
+    {!minimal && (
+      <nav aria-label="Main" class="links">
+        {links.map((link) => <a href={link.href}>{link.label}</a>)}
+      </nav>
+    )}
     <div class="end">
-      <ThemeToggle />
-      <a class="book btn btn-primary" href="/#contact" data-book>Book a call</a>
-      <button type="button" class="menu" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+      {!minimal && <ThemeToggle />}
+      <a class:list={['book btn btn-primary', { always: minimal }]} href={minimal ? '#contact' : '/#contact'} data-book>Book a call</a>
+      {!minimal && <button type="button" class="menu" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"></path></svg>
-      </button>
+      </button>}
     </div>
   </header>
-  <nav id="mobile-menu" class="panel" aria-label="Menu" data-menu hidden>
-    {links.map((link) => <a href={link.href}>{link.label}</a>)}
-    <a class="btn btn-primary" href="/#contact" data-book>Book a call</a>
-  </nav>
+  {!minimal && (
+    <nav id="mobile-menu" class="panel" aria-label="Menu" data-menu hidden>
+      {links.map((link) => <a href={link.href}>{link.label}</a>)}
+      <a class="btn btn-primary" href="/#contact" data-book>Book a call</a>
+    </nav>
+  )}
 </div>
 <div class="sentinel" data-nav-sentinel aria-hidden="true"></div>
 
@@ -98,6 +107,9 @@ const links = [
     padding-inline: 1.125rem;
     font-size: 0.9375rem;
     white-space: nowrap;
+  }
+  .book.always {
+    display: inline-flex;
   }
   .menu {
     display: inline-grid;

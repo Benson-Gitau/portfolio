@@ -7,13 +7,15 @@ import Nav from '../components/Nav.astro';
 interface Props {
   title: string;
   description?: string;
+  /** Landing pages: logo and Book a call only, no footer links. */
+  minimal?: boolean;
 }
-const { title, description } = Astro.props;
+const { title, description, minimal = false } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description}>
-  <Nav />
+  <Nav minimal={minimal} />
   <main id="main"><slot /></main>
-  <Footer />
+  <Footer minimal={minimal} />
   <BookingModal />
 </BaseLayout>

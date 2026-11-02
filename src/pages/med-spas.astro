@@ -1,0 +1,377 @@
+---
+import FinalCta from '../components/home/FinalCta.astro';
+import Heading from '../components/Heading.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Tick from '../components/Tick.astro';
+import VideoLite from '../components/VideoLite.astro';
+import SystemDiagram from '../components/work/SystemDiagram.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { getHome, getMedSpaPage, getProjects, getProjectTestimonials } from '../lib/content';
+
+const [page, home, projects] = await Promise.all([getMedSpaPage(), getHome(), getProjects()]);
+const project = projects.find((item) => item.slug === page.proof.project);
+if (!project) throw new Error('[content] medSpaPage proof must link to a project');
+const testimonials = await getProjectTestimonials(project.slug);
+const { hero } = page;
+---
+
+<SiteLayout title={page.seo.title} description={page.seo.description} minimal>
+  <section class="hero wrap">
+    <p class="eyebrow" data-template={hero.personalisedEyebrow}>{hero.eyebrow}</p>
+    <script is:inline>
+      // Static page, so this runs in the visitor's browser. The name is checked and only ever set as text.
+      (function () {
+        var el = document.currentScript.previousElementSibling;
+        var spa = (new URLSearchParams(location.search).get('spa') || '').trim();
+        if (!spa || !/^[\p{L}\p{N} '’&-]+$/u.test(spa)) return;
+        spa = spa.slice(0, 40).trim();
+        el.textContent = el.dataset.template.replace('{spa}', function () {
+          return spa;
+        });
+      })();
+    </script>
+    <Heading as="h1" text={hero.headline} />
+    <p class="sub">{hero.subline}</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="#contact" data-book>{hero.primaryCta}</a>
+      <a class="btn btn-secondary" href="#demo">{hero.secondaryCta}</a>
+    </div>
+  </section>
+
+  <section class="demo wrap" id="demo" aria-labelledby="demo-title">
+    <div class="demo-copy">
+      <p class="mono-label teal">{project.typeLabel}</p>
+      <h2 id="demo-title">{page.demoVideo.title}</h2>
+    </div>
+    <VideoLite video={page.demoVideo} sizes="(min-width: 1024px) 60vw, 100vw" titleOutside />
+  </section>
+
+  <section class="leaks section wrap">
+    <Heading class="h2" text={page.leaks.heading} />
+    <ul>
+      {page.leaks.items.map((item) => <li><Tick open class="open" /><p>{item}</p></li>)}
+    </ul>
+  </section>
+
+  <section class="system wrap">
+    <Heading class="h2 sticky" text={page.system.heading} />
+    <SystemDiagram steps={page.system.steps} />
+  </section>
+
+  <section class="band">
+    <div class="section wrap">
+      <Heading class="h2" text={page.offers.heading} />
+      <ol class="offers">
+        {page.offers.items.map((item) => (
+          <li>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+          </li>
+        ))}
+      </ol>
+      <p class="also">{page.offers.alsoLine}</p>
+    </div>
+  </section>
+
+  <section class="platforms section wrap">
+    <Heading class="h2" text={page.platforms.heading} />
+    <div>
+      <ul>{page.platforms.chips.map((chip) => <li class="chip">{chip}</li>)}</ul>
+      <p>{page.platforms.text}</p>
+    </div>
+  </section>
+
+  <section class="careful wrap">
+    <Heading class="h2" text={page.safeguards.heading} />
+    <ul>
+      {page.safeguards.items.map((item) => <li><Tick class="done" /><p>{item}</p></li>)}
+    </ul>
+  </section>
+
+  <section class="proof section wrap">
+    <Heading class="h2" text={page.proof.heading} />
+    <div class="proof-grid">
+      <a class="card" href={`/work/${project.slug}`}>
+        <span class="mono-label teal">{project.typeLabel}</span>
+        <h3>{project.title}</h3>
+        <p class="card-result">{project.cardResult}</p>
+      </a>
+      <p class="line">{page.proof.line}</p>
+    </div>
+  </section>
+
+  <Testimonials heading={home.proof.heading} items={testimonials} />
+
+  <section class="faq wrap">
+    <Heading class="h2" text={page.faq.heading} />
+    <div class="items">
+      {page.faq.items.map((item) => (
+        <details>
+          <summary>
+            <span>{item.q}</span>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path class="v" d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+          </summary>
+          <p>{item.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <FinalCta cta={page.finalCta} note={page.finalCta.emailLine} />
+</SiteLayout>
+
+<style>
+  .hero {
+    padding-top: 1.5rem;
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+  .eyebrow {
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+  }
+  .hero :global(h1) {
+    margin-top: 1rem;
+    max-width: 20ch;
+    font-size: clamp(2.5rem, 7vw, 6.25rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+  .hero :global(h1 .accent-word) {
+    color: var(--accent-text);
+    white-space: nowrap;
+  }
+  .sub {
+    margin-top: 1.5rem;
+    max-width: 58ch;
+    font-size: 1.125rem;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+  .demo {
+    display: grid;
+    gap: 1rem;
+  }
+  .teal {
+    color: var(--teal-text);
+  }
+  .demo-copy h2 {
+    margin-top: 0.5rem;
+    font-size: clamp(1.375rem, 2.4vw, 2rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .leaks ul {
+    display: grid;
+    gap: 0 clamp(2rem, 4vw, 4rem);
+    margin-top: 2.5rem;
+  }
+  .leaks li {
+    display: flex;
+    gap: 1rem;
+    padding-block: 1.5rem;
+    border-top: 1px solid var(--rule);
+  }
+  .leaks li p {
+    font-family: var(--font-geist);
+    font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+    font-weight: 500;
+    line-height: 1.22;
+    letter-spacing: -0.015em;
+  }
+  .leaks :global(.open) {
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-top: 0.125rem;
+    color: var(--danger);
+  }
+  .system {
+    display: grid;
+    gap: 2rem;
+    padding-bottom: var(--space-section);
+  }
+  .band {
+    background: var(--surface);
+  }
+  .offers {
+    display: grid;
+    margin-top: 2.5rem;
+    counter-reset: offer;
+  }
+  .offers li {
+    position: relative;
+    padding: 1.5rem 0 1.5rem 3rem;
+    border-top: 1px solid var(--rule);
+    counter-increment: offer;
+  }
+  .offers li::before {
+    content: counter(offer);
+    position: absolute;
+    left: 0;
+    top: 1.5rem;
+    color: var(--teal-text);
+    font-family: var(--font-geist-mono);
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    line-height: 1.1;
+  }
+  .offers h3 {
+    font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+  }
+  .offers p {
+    margin-top: 0.625rem;
+    color: var(--text-muted);
+  }
+  .also {
+    margin-top: 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+  }
+  .platforms {
+    display: grid;
+    gap: 1.5rem;
+  }
+  .platforms ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .platforms .chip {
+    font-size: 0.9375rem;
+    padding: 0.25rem 0.875rem;
+  }
+  .platforms p {
+    margin-top: 1.25rem;
+    font-size: 1.0625rem;
+  }
+  .careful ul {
+    display: grid;
+    gap: 0 clamp(2rem, 4vw, 4rem);
+    margin-top: 2rem;
+  }
+  .careful li {
+    display: flex;
+    gap: 0.875rem;
+    padding-block: 1.125rem;
+    border-top: 1px solid var(--rule);
+  }
+  .careful :global(.done) {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--teal-text);
+  }
+  .proof-grid {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .card {
+    display: block;
+    padding: clamp(1.25rem, 2.2vw, 2rem);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    transition: transform var(--dur-ui) var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover {
+      transform: translateY(-4px);
+    }
+  }
+  .card h3 {
+    margin-top: 0.75rem;
+    font-size: clamp(1.375rem, 2.2vw, 2rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+  }
+  .card-result {
+    margin-top: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-geist-mono);
+    font-size: 0.875rem;
+  }
+  .line {
+    font-size: 1.125rem;
+  }
+  .faq {
+    padding-bottom: var(--space-section);
+  }
+  .items {
+    margin-top: 2rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  details {
+    border-top: 1px solid var(--rule);
+  }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 44px;
+    padding-block: 1.125rem;
+    font-family: var(--font-geist);
+    font-size: clamp(1.125rem, 1.8vw, 1.375rem);
+    font-weight: 500;
+    line-height: 1.25;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary svg {
+    flex: none;
+    color: var(--teal-text);
+  }
+  summary .v {
+    transform-origin: center;
+    transition: transform var(--dur-ui) var(--ease-out);
+  }
+  details[open] summary .v {
+    transform: rotate(90deg);
+  }
+  details p {
+    padding-bottom: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .leaks ul,
+    .careful ul {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .offers {
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(1.5rem, 3vw, 3rem);
+    }
+  }
+  @media (min-width: 1024px) {
+    .demo,
+    .system,
+    .platforms,
+    .proof-grid {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      column-gap: clamp(2rem, 4vw, 4rem);
+      align-items: start;
+    }
+    .proof-grid {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: end;
+    }
+    .faq {
+      display: grid;
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      column-gap: clamp(2rem, 4vw, 4rem);
+    }
+    .faq .items {
+      margin-top: 0;
+    }
+    .sticky {
+      position: sticky;
+      top: 6rem;
+    }
+  }
+</style>

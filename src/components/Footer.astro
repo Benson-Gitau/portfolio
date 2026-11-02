@@ -2,6 +2,10 @@
 import Placeholder from './Placeholder.astro';
 import { getSettings, hasPlaceholder } from '../lib/content';
 
+interface Props {
+  minimal?: boolean;
+}
+const { minimal = false } = Astro.props;
 const settings = await getSettings();
 const agencyLinked = !hasPlaceholder(settings.agencyUrl) && Boolean(settings.agencyUrl);
 const year = new Date().getFullYear();
@@ -14,14 +18,14 @@ const year = new Date().getFullYear();
     <p>{settings.footerLocation}</p>
     <p>© {year}</p>
   </div>
-  <nav aria-label="Footer">
+  {!minimal && <nav aria-label="Footer">
     <a href="/#work">Work</a>
     <a href="/#services">Services</a>
     {agencyLinked ? <a href={settings.agencyUrl}>{settings.agencyName}</a> : <span><Placeholder text={settings.agencyName} /></span>}
     <a href={settings.linkedinUrl}>LinkedIn</a>
     <a href={settings.githubUrl}>GitHub</a>
     <a href={settings.xUrl}>X</a>
-  </nav>
+  </nav>}
 </footer>
 
 <style>

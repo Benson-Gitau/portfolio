@@ -5,8 +5,10 @@ import { getSettings } from '../../lib/content';
 
 interface Props {
   cta: { heading: string; text: string };
+  /** Replaces the email and LinkedIn links below the calendar. */
+  note?: string;
 }
-const { cta } = Astro.props;
+const { cta, note } = Astro.props;
 const settings = await getSettings();
 ---
 
@@ -18,17 +20,20 @@ const settings = await getSettings();
     </div>
     <div class="booking-col">
       <div class="calendar glass"><BookingEmbed loadOn="view" /></div>
-      <ul class="links">
-        <li><a class="text-link" href={`mailto:${settings.email}`}>{settings.email}</a></li>
-        <li><a class="text-link" href={settings.linkedinUrl}>LinkedIn</a></li>
-      </ul>
+      {note ? (
+        <p class="note">{note}</p>
+      ) : (
+        <ul class="links">
+          <li><a class="text-link" href={`mailto:${settings.email}`}>{settings.email}</a></li>
+          <li><a class="text-link" href={settings.linkedinUrl}>LinkedIn</a></li>
+        </ul>
+      )}
     </div>
   </div>
 </section>
 
 <style>
   .final {
-    scroll-margin-top: 4rem;
   }
   .inner {
     display: grid;
@@ -40,6 +45,9 @@ const settings = await getSettings();
   .copy p {
     margin-top: 1.25rem;
     font-size: 1.0625rem;
+  }
+  .note {
+    margin-top: 1rem;
   }
   .links {
     display: flex;

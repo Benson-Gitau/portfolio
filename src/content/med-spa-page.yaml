@@ -1,11 +1,15 @@
 seo:
   title: AI Receptionist & Follow-Up for Med Spas — Benson Gitau
-  description: Stop losing consultations to voicemail. Calls answered, leads followed up and no-shows recovered, connected to your booking platform.
+  description: >-
+    Stop losing consultations to voicemail. Calls answered, leads followed up
+    and no-shows recovered, connected to your booking platform.
 hero:
   eyebrow: For med spas and aesthetic clinics
   personalisedEyebrow: Built for {spa}
-  headline: Your next consultation is calling while you're mid-treatment.
-  subline: I build the system that answers every call, follows up every lead and fills empty slots, connected to the booking platform you already use.
+  headline: Your next consultation is calling while you're *mid-treatment*.
+  subline: >-
+    I build the system that answers every call, follows up every lead and fills
+    empty slots, connected to the booking platform you already use.
   primaryCta: Book a 15-minute walkthrough
   secondaryCta: Watch the 90-second demo ↓
 demoVideo:
@@ -17,14 +21,16 @@ demoVideo:
   transcript: '[MEDSPA_DEMO_TRANSCRIPT]'
   durationLabel: 90s
 leaks:
-  heading: Where bookings leak
+  heading: Where bookings *leak*
   items:
-    - Calls during treatments and after hours go to voicemail, and most callers book elsewhere.
+    - >-
+      Calls during treatments and after hours go to voicemail, and most callers
+      book elsewhere.
     - Ad and website leads wait hours for a reply.
     - No-shows and lapsed clients leave empty slots that nobody follows up.
     - Your team retypes between the booking platform, CRM and marketing tools.
 system:
-  heading: The system
+  heading: The *system*
   steps:
     - title: Call or lead
       description: A call, missed call, form or ad lead comes in.
@@ -39,7 +45,7 @@ system:
     - title: Rebooking
       description: Clients are invited back at the right treatment interval.
 offers:
-  heading: Where to start
+  heading: Where to *start*
   items:
     - title: Missed-call text-back and no-show recovery
       text: The fastest win, live in days.
@@ -47,41 +53,59 @@ offers:
       text: Every call answered and booked; clinical questions go to your team.
     - title: Reactivation and reviews
       text: Past clients rebooked and more Google reviews.
-  alsoLine: 'Also available: treatment landing pages, speed-to-lead for ad leads, and GoHighLevel setup.'
+  alsoLine: >-
+    Also available: treatment landing pages, speed-to-lead for ad leads, and
+    GoHighLevel setup.
 platforms:
-  heading: Works with what you use
+  heading: Works with what you *use*
   chips:
     - GoHighLevel
     - Aesthetic Record
     - Boulevard
     - Vagaro
     - Zenoti
-  text: Every booking platform allows different connections. Before you commit, I check what yours supports and tell you exactly what will and won't connect.
+  text: >-
+    Every booking platform allows different connections. Before you commit, I
+    check what yours supports and tell you exactly what will and won't connect.
 safeguards:
-  heading: Handled carefully
+  heading: Handled *carefully*
   items:
     - Medical and treatment details stay out of texts and call summaries.
     - Leads are only called with their consent; opt-outs are automatic.
     - US texting is registered (A2P) so messages actually deliver.
-    - We review each tool's data terms, including BAAs where needed, before building.
+    - >-
+      We review each tool's data terms, including BAAs where needed, before
+      building.
 proof:
   heading: Proof
   project: med-spa-ai-receptionist
-  line: For an e-commerce client, the same capture-and-follow-up approach cut manual operational oversight by roughly 80%.
+  line: >-
+    For an e-commerce client, the same capture-and-follow-up approach cut manual
+    operational oversight by roughly 80%.
 faq:
   heading: FAQ
   items:
     - q: Will patients know it's AI?
       a: It introduces itself as your virtual assistant; you approve the wording.
     - q: Do I need to change booking software?
-      a: No. I work with your current platform where it allows, or set up GoHighLevel alongside it.
+      a: >-
+        No. I work with your current platform where it allows, or set up
+        GoHighLevel alongside it.
     - q: How long does it take?
-      a: Text-back and reminders in under a week; an AI receptionist in about two weeks.
+      a: >-
+        Text-back and reminders in under a week; an AI receptionist in about two
+        weeks.
     - q: What does it cost to run?
-      a: Phone and AI minutes are billed to your own accounts; I estimate them before building.
+      a: >-
+        Phone and AI minutes are billed to your own accounts; I estimate them
+        before building.
     - q: What if it gets something wrong?
-      a: It answers only from your approved information, hands off when unsure, and every call is recorded for review.
+      a: >-
+        It answers only from your approved information, hands off when unsure,
+        and every call is recorded for review.
 finalCta:
-  heading: See what this would look like for your spa.
-  text: 15 minutes. I'll map where your bookings leak and show you the system I'd build first.
+  heading: See what this would look like for *your spa*.
+  text: >-
+    15 minutes. I'll map where your bookings leak and show you the system I'd
+    build first.
   emailLine: Prefer email? Reply to the message I sent you.
