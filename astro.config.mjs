@@ -6,22 +6,25 @@ import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import keystatic from '@keystatic/astro';
 import tailwindcss from '@tailwindcss/vite';
+import { readFileSync } from 'node:fs';
 
 // Keystatic's local storage needs Node, so dev runs without the Workers adapter.
 const isDev = process.argv.includes('dev');
 
+// settings.siteUrl drives canonical URLs and the sitemap. Neither exists until it is a real URL.
+const configuredSite = readFileSync('src/content/settings.yaml', 'utf8').match(/^siteUrl:\s*['"]?(https:\/\/[^'"\s]+)/m)?.[1];
+
 // Public pages are prerendered. Only the /keystatic admin runs on the Worker.
 export default defineConfig({
   build: { format: 'file' },
-  // Replaced by settings.siteUrl once [SITE_URL] is known.
-  site: 'https://example.com',
+  site: configuredSite,
   adapter: isDev ? undefined : cloudflare({ imageService: 'compile', prerenderEnvironment: 'node' }),
   session: false,
   integrations: [
     react(),
     markdoc(),
     keystatic(),
-    sitemap({ filter: (page) => !page.includes('/keystatic') }),
+    ...(configuredSite ? [sitemap({ filter: (page) => !page.includes('/keystatic') && !page.includes('/404') })] : []),
   ],
   fonts: [
     {

@@ -8,12 +8,33 @@ import Services from '../components/home/Services.astro';
 import WorkGrid from '../components/home/WorkGrid.astro';
 import Testimonials from '../components/Testimonials.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
-import { getFeaturedTestimonials, getHome } from '../lib/content';
+import { getFeaturedTestimonials, getHome, getSettings, hasPlaceholder } from '../lib/content';
 
-const [home, testimonials] = await Promise.all([getHome(), getFeaturedTestimonials()]);
+const [home, testimonials, settings] = await Promise.all([getHome(), getFeaturedTestimonials(), getSettings()]);
+
+const person = {
+  '@type': 'Person',
+  name: 'Benson Gitau',
+  jobTitle: 'Automation & AI Systems Consultant',
+  sameAs: [settings.linkedinUrl, settings.githubUrl, settings.xUrl],
+  ...(hasPlaceholder(settings.siteUrl) ? {} : { url: settings.siteUrl }),
+};
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    person,
+    ...home.services.items.map((service) => ({
+      '@type': 'Service',
+      name: service.title,
+      description: service.text,
+      provider: { '@type': 'Person', name: person.name },
+    })),
+  ],
+};
 ---
 
 <SiteLayout title={home.seo.title} description={home.seo.description}>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(structuredData).replaceAll('<', '\\u003c')} />
   <Hero hero={home.hero} cards={home.heroCards} />
   <Leaks problem={home.problem} outcomes={home.outcomes} />
   <WorkGrid work={home.work} />

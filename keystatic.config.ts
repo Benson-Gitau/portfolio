@@ -276,6 +276,10 @@ export default config({
           },
           { label: 'Project page labels' },
         ),
+        notFound: fields.object(
+          { heading: text('Heading'), text: text('Text'), workLabel: text('Work link'), bookLabel: text('Book button') },
+          { label: '404 page' },
+        ),
         footerRole: text('Footer role'),
         footerLocation: text('Footer location'),
       },

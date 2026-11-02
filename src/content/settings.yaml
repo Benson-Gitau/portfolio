@@ -7,8 +7,10 @@ agencyName: Codevant Solutions
 agencyUrl: https://codevantsolutions.com/
 siteUrl: '[SITE_URL]'
 defaultShareImage:
-  image: null
-  alt: ''
+  image: /src/assets/content/defaultShareImage/image.png
+  alt: >-
+    Benson Gitau beside the headline: Every call answered. Every lead followed
+    up. Every slot booked.
 analyticsSnippet: ''
 footerRole: Automation & AI systems
 footerLocation: Nairobi, working worldwide
@@ -23,3 +25,10 @@ caseStudy:
   tools: Tools
   demoVideo: Demo video
   gallery: Gallery
+notFound:
+  heading: This page doesn't *exist*.
+  text: >-
+    The link may be old or mistyped. The work and the booking calendar are still
+    here.
+  workLabel: See the work
+  bookLabel: Book a call

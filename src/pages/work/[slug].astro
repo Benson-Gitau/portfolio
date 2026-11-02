@@ -23,7 +23,7 @@ const headline = project.accentWord ? project.title.replace(project.accentWord, 
 const hasMedia = Boolean(project.demoVideo) || project.gallery.length > 0;
 ---
 
-<SiteLayout title={`${project.title} — Benson Gitau`} description={project.summary}>
+<SiteLayout title={`${project.title} — Benson Gitau`} description={project.summary} shareImage={project.cover}>
   <article>
     <header class="head wrap">
       <a class="back" href="/#work">{labels.allWork}</a>

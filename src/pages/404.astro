@@ -1,0 +1,42 @@
+---
+import Heading from '../components/Heading.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { getSettings } from '../lib/content';
+
+const { notFound } = await getSettings();
+---
+
+<SiteLayout title={`${notFound.heading.replaceAll('*', '')} — Benson Gitau`} description={notFound.text} noindex>
+  <section class="missing wrap">
+    <Heading as="h1" text={notFound.heading} />
+    <p>{notFound.text}</p>
+    <div class="actions">
+      <a class="btn btn-secondary" href="/#work">{notFound.workLabel}</a>
+      <a class="btn btn-primary" href="/#contact" data-book>{notFound.bookLabel}</a>
+    </div>
+  </section>
+</SiteLayout>
+
+<style>
+  .missing {
+    padding-block: clamp(4rem, 14vw, 11rem);
+  }
+  .missing :global(h1) {
+    font-size: clamp(2.5rem, 7vw, 6.25rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+  .missing :global(h1 .accent-word) {
+    color: var(--accent-text);
+  }
+  p {
+    margin-top: 1.5rem;
+    font-size: 1.125rem;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+</style>

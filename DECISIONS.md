@@ -101,3 +101,12 @@ Benson approved **Direction A, The Reconciliation, with Direction C's notificati
 | Phones get less travel and a shorter stagger (12px, 40ms) | The spec asks for motion to be simplified on mobile |
 | Pages build as flat files (`build.format: 'file'`) | Otherwise Workers answers `/med-spas` with a 307 to `/med-spas/`, adding a redirect to every cold-email link and project link |
 | Instrument Serif is preloaded | It loaded late and re-wrapped headlines, shifting the med spa page by 0.09 on phones. Now 0 in production |
+
+## Phase 8: SEO and checks
+
+| Decision | Why |
+| --- | --- |
+| Canonical links, Open Graph URLs and images, and the sitemap appear only once `settings.siteUrl` is a real URL | A stand-in domain in production would tell search engines the wrong address |
+| Share images come from Astro's `getImage`, cropped to 1200×630 at build time | No extra service or Worker code |
+| Default share image was made from the site's own hero type and Benson's portrait | The spec needs a fallback and none was supplied. Project pages use it until they have covers |
+| 404 copy lives in `settings.notFound` and is my wording | The spec gives the page's links, not its copy |

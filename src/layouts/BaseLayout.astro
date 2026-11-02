@@ -1,14 +1,27 @@
 ---
-import { Font } from 'astro:assets';
+import { Font, getImage } from 'astro:assets';
 import '../styles/global.css';
+import { getSettings, hasPlaceholder, resolveImage, type ResolvedImage } from '../lib/content';
 
 interface Props {
   title: string;
   description?: string;
   noindex?: boolean;
+  shareImage?: ResolvedImage | null;
 }
 
-const { title, description, noindex = false } = Astro.props;
+const { title, description, noindex = false, shareImage } = Astro.props;
+const settings = await getSettings();
+const siteUrl = settings.siteUrl && !hasPlaceholder(settings.siteUrl) ? settings.siteUrl : null;
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/').replace(/(.+)\/$/, '$1');
+const canonical = siteUrl ? new URL(path, siteUrl).href : null;
+
+// Share images need an absolute URL, so they wait for siteUrl too.
+const share = shareImage ?? (await resolveImage(settings.defaultShareImage, 'default share image'));
+const ogImage =
+  siteUrl && share
+    ? new URL((await getImage({ src: share.src, width: 1200, height: 630, format: 'png', fit: 'cover' })).src, siteUrl).href
+    : null;
 ---
 
 <!doctype html>
@@ -20,6 +33,20 @@ const { title, description, noindex = false } = Astro.props;
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     {noindex && <meta name="robots" content="noindex" />}
+    {canonical && !noindex && <link rel="canonical" href={canonical} />}
+    <meta property="og:site_name" content="Benson Gitau" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    {canonical && <meta property="og:url" content={canonical} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    {ogImage && <meta property="og:image:width" content="1200" />}
+    {ogImage && <meta property="og:image:height" content="630" />}
+    {ogImage && share && <meta property="og:image:alt" content={share.alt} />}
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
 
