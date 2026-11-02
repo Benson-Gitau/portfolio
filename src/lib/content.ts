@@ -39,6 +39,9 @@ export async function resolveImage(
 /** Text still holding a [BRACKETED] value from the spec. */
 export const hasPlaceholder = (value: string | null | undefined) => /\[[^\]]+\]/.test(value ?? '');
 
+/** A video can play only once it has a real ID. */
+export const videoReady = (video: { youtubeId: string }) => Boolean(video.youtubeId) && !hasPlaceholder(video.youtubeId);
+
 export const getSettings = async () => (await reader.singletons.settings.readOrThrow());
 export const getHome = async () => (await reader.singletons.home.readOrThrow());
 export const getMedSpaPage = async () => (await reader.singletons.medSpaPage.readOrThrow());

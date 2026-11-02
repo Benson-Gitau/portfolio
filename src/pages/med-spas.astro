@@ -6,13 +6,14 @@ import Tick from '../components/Tick.astro';
 import VideoLite from '../components/VideoLite.astro';
 import SystemDiagram from '../components/work/SystemDiagram.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
-import { getHome, getMedSpaPage, getProjects, getProjectTestimonials } from '../lib/content';
+import { getHome, getMedSpaPage, getProjects, getProjectTestimonials, videoReady } from '../lib/content';
 
 const [page, home, projects] = await Promise.all([getMedSpaPage(), getHome(), getProjects()]);
 const project = projects.find((item) => item.slug === page.proof.project);
 if (!project) throw new Error('[content] medSpaPage proof must link to a project');
 const testimonials = await getProjectTestimonials(project.slug);
 const { hero } = page;
+const showDemo = videoReady(page.demoVideo) || import.meta.env.DEV;
 ---
 
 <SiteLayout title={page.seo.title} description={page.seo.description} minimal>
@@ -34,17 +35,17 @@ const { hero } = page;
     <p class="sub">{hero.subline}</p>
     <div class="actions">
       <a class="btn btn-primary" href="#contact" data-book>{hero.primaryCta}</a>
-      <a class="btn btn-secondary" href="#demo">{hero.secondaryCta}</a>
+      {showDemo && <a class="btn btn-secondary" href="#demo">{hero.secondaryCta}</a>}
     </div>
   </section>
 
-  <section class="demo wrap" id="demo" aria-labelledby="demo-title">
+  {showDemo && <section class="demo wrap" id="demo" aria-labelledby="demo-title">
     <div class="demo-copy">
       <p class="mono-label teal">{project.typeLabel}</p>
       <h2 id="demo-title">{page.demoVideo.title}</h2>
     </div>
     <VideoLite video={page.demoVideo} sizes="(min-width: 1024px) 60vw, 100vw" titleOutside />
-  </section>
+  </section>}
 
   <section class="leaks section wrap">
     <Heading class="h2" text={page.leaks.heading} />

@@ -94,7 +94,9 @@ Benson approved **Direction A, The Reconciliation, with Direction C's notificati
 
 | Decision | Why |
 | --- | --- |
-| No 3D element | The approved direction has none, and the spec only calls for one if the direction includes it |
+| 3D accent: a low-poly stack of ledger sheets squaring up beside the final call to action | Approved in Phase 2 and required by the spec's motion level. Phase 7 first shipped without it and wrongly recorded that the direction had none; corrected in Phase 8 |
+| Three.js loads on its own, only when the accent is near view | Spec's loading rules. It is not part of any page's first load |
+| Static drawing instead of WebGL under 768px, on 4 or fewer CPU cores, 4GB or less memory, Save-Data, reduced motion or failed WebGL | Spec's fallback rules |
 | No motion library; CSS plus one IntersectionObserver script | Lightest option in the principles, and adds no dependency |
 | Only content below the fold is hidden, and only by the running script | A failed script, no JavaScript or reduced motion leaves all content visible |
 | No parallax or scroll-linked motion | Reveals and the drawing ticks carry the direction's idea; parallax would add movement without meaning |
@@ -110,3 +112,7 @@ Benson approved **Direction A, The Reconciliation, with Direction C's notificati
 | Share images come from Astro's `getImage`, cropped to 1200×630 at build time | No extra service or Worker code |
 | Default share image was made from the site's own hero type and Benson's portrait | The spec needs a fallback and none was supplied. Project pages use it until they have covers |
 | 404 copy lives in `settings.notFound` and is my wording | The spec gives the page's links, not its copy |
+| Unfinished videos and placeholder transcripts are left out of production builds, along with the med spa demo button | A play button with nothing behind it breaks trust. They appear as soon as the values are added |
+| Every production build warns about placeholders left in the pages | So an unfinished value cannot ship unnoticed |
+| Orange is limited to actions and key numbers: "Client project" labels, the problem's closing line and the lead service card are now neutral | Finish review, against the approved contract |
+| Project cards without covers lost their inner panel, and the booking fallback lost its second frame | Finish review |

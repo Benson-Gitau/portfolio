@@ -48,10 +48,6 @@ const { services } = Astro.props;
     font-family: var(--font-geist-mono);
   }
   /* The lead service is the most common starting point, so it takes the focus. */
-  .cell:first-child {
-    background: var(--accent-soft);
-    border-color: color-mix(in srgb, var(--accent-text) 45%, transparent);
-  }
   .cell:first-child h3 {
     font-size: clamp(1.75rem, 3.4vw, 3rem);
     letter-spacing: -0.03em;

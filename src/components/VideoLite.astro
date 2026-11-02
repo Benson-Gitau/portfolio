@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Placeholder from './Placeholder.astro';
-import { hasPlaceholder, resolveImage } from '../lib/content';
+import { hasPlaceholder, resolveImage, videoReady } from '../lib/content';
 
 interface Props {
   video: {
@@ -20,7 +20,10 @@ interface Props {
 }
 const { video, ratio = '16 / 9', position = '50% 22%', priority = false, sizes = '(min-width: 1024px) 40vw, 100vw', titleOutside = false } = Astro.props;
 const poster = await resolveImage(video.poster, `${video.title} poster`);
-const ready = !hasPlaceholder(video.youtubeId) && Boolean(video.youtubeId);
+const ready = videoReady(video);
+// In development unfinished values stay visible and marked. On the live site they are left out.
+const showPlayer = ready || import.meta.env.DEV;
+const showTranscript = Boolean(video.transcript) && (import.meta.env.DEV || !hasPlaceholder(video.transcript));
 const src = ready
   ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(video.youtubeId)}?autoplay=1&cc_load_policy=1&rel=0&playsinline=1`
   : '';
@@ -34,15 +37,15 @@ const src = ready
       ) : (
         !titleOutside && <p class="no-poster">{video.title}</p>
       )}
-      <button type="button" class="play" aria-label={`Play video: ${video.title}`}>
+      {showPlayer && <button type="button" class="play" aria-label={`Play video: ${video.title}`}>
         <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.53.85l10.5-6.5a1 1 0 0 0 0-1.7L9.53 4.65A1 1 0 0 0 8 5.5Z"></path></svg>
-      </button>
-      {video.durationLabel && <span class="dur">{video.durationLabel}</span>}
+      </button>}
+      {showPlayer && video.durationLabel && <span class="dur">{video.durationLabel}</span>}
     </div>
   </div>
   {import.meta.env.DEV && !ready && <p class="status"><Placeholder text={video.youtubeId} /></p>}
   <p class="status" data-status role="status"></p>
-  {video.transcript && (
+  {showTranscript && (
     <details class="transcript">
       <summary>Read transcript</summary>
       <p><Placeholder text={video.transcript} /></p>

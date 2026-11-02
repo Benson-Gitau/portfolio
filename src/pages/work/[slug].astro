@@ -8,7 +8,7 @@ import VideoLite from '../../components/VideoLite.astro';
 import Results from '../../components/work/Results.astro';
 import SystemDiagram from '../../components/work/SystemDiagram.astro';
 import SiteLayout from '../../layouts/SiteLayout.astro';
-import { getHome, getProjects, getProjectTestimonials, getSettings } from '../../lib/content';
+import { getHome, getProjects, getProjectTestimonials, getSettings, videoReady } from '../../lib/content';
 
 export async function getStaticPaths() {
   const projects = await getProjects();
@@ -20,7 +20,8 @@ const [settings, home, testimonials] = await Promise.all([getSettings(), getHome
 const labels = settings.caseStudy;
 const client = project.clientName ?? project.clientDescriptor;
 const headline = project.accentWord ? project.title.replace(project.accentWord, `*${project.accentWord}*`) : project.title;
-const hasMedia = Boolean(project.demoVideo) || project.gallery.length > 0;
+const demoVideo = project.demoVideo && (videoReady(project.demoVideo) || import.meta.env.DEV) ? project.demoVideo : null;
+const hasMedia = Boolean(demoVideo) || project.gallery.length > 0;
 ---
 
 <SiteLayout title={`${project.title} — Benson Gitau`} description={project.summary} shareImage={project.cover}>
@@ -71,11 +72,11 @@ const hasMedia = Boolean(project.demoVideo) || project.gallery.length > 0;
 
     {hasMedia && (
       <div class="media section wrap">
-        {project.demoVideo && (
+        {demoVideo && (
           <section>
             <h2 class="h2">{labels.demoVideo}</h2>
             <p class="mono-label demo video-label">{project.typeLabel}</p>
-            <div class="video-wrap"><VideoLite video={project.demoVideo} sizes="(min-width: 1024px) 56rem, 100vw" /></div>
+            <div class="video-wrap"><VideoLite video={demoVideo} sizes="(min-width: 1024px) 56rem, 100vw" /></div>
           </section>
         )}
         {project.gallery.length > 0 && (
@@ -128,7 +129,7 @@ const hasMedia = Boolean(project.demoVideo) || project.gallery.length > 0;
     color: var(--teal-text);
   }
   .client {
-    color: var(--accent-text);
+    color: var(--text-muted);
   }
   .industry {
     color: var(--text-muted);

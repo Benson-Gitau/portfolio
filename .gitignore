@@ -30,3 +30,4 @@ pnpm-debug.log*
 # tool output
 .playwright-mcp/
 .taste-skill/
+.impeccable/review/

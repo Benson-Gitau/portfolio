@@ -1,6 +1,7 @@
 ---
 import BookingEmbed from '../BookingEmbed.astro';
 import Heading from '../Heading.astro';
+import LedgerStack from '../LedgerStack.astro';
 import { getSettings } from '../../lib/content';
 
 interface Props {
@@ -17,6 +18,7 @@ const settings = await getSettings();
     <div class="copy">
       <Heading class="h2" text={cta.heading} />
       <p>{cta.text}</p>
+      <LedgerStack />
     </div>
     <div class="booking-col">
       <div class="calendar glass"><BookingEmbed loadOn="view" /></div>
