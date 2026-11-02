@@ -159,6 +159,46 @@
     scrollbar-gutter: stable;
   }
 
+  /* Reveals: set only by src/lib/reveal.ts. Transform and opacity, so nothing reflows. */
+  [data-rv='out'] {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  [data-rv='in'] {
+    transition:
+      opacity var(--dur-reveal) var(--ease-out),
+      transform var(--dur-reveal) var(--ease-out);
+  }
+  /* A tick inside a revealed row draws as the row arrives: the ledger closing line by line. */
+  [data-rv] .mark path {
+    stroke-dasharray: 1;
+  }
+  [data-rv='out'] .mark path {
+    stroke-dashoffset: 1;
+  }
+  [data-rv='in'] .mark path {
+    animation: tick-draw var(--dur-reveal) var(--ease-out) var(--rv-delay, 0ms) both;
+  }
+  @keyframes tick-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @media (min-width: 768px) {
+    [data-rv='out'] {
+      transform: translateY(20px);
+    }
+  }
+  @media print {
+    [data-rv] {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
   .wrap {
     max-width: 96rem;
     margin-inline: auto;

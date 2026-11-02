@@ -12,6 +12,7 @@ const isDev = process.argv.includes('dev');
 
 // Public pages are prerendered. Only the /keystatic admin runs on the Worker.
 export default defineConfig({
+  build: { format: 'file' },
   // Replaced by settings.siteUrl once [SITE_URL] is known.
   site: 'https://example.com',
   adapter: isDev ? undefined : cloudflare({ imageService: 'compile', prerenderEnvironment: 'node' }),

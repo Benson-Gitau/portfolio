@@ -89,3 +89,15 @@ Benson approved **Direction A, The Reconciliation, with Direction C's notificati
 | `?spa=` is applied by a small inline script straight after the eyebrow | The page is static, and running it there avoids a flash of the default text |
 | A name with any disallowed character falls back to the default eyebrow; a valid long name is cut to 40 characters | Spec's sanitising rule. Letters from any alphabet count, so "Zoë" works |
 | Video heading is the demo's title | The spec's demo section has no heading, and the section needs one for screen readers |
+
+## Phase 7: motion and 3D
+
+| Decision | Why |
+| --- | --- |
+| No 3D element | The approved direction has none, and the spec only calls for one if the direction includes it |
+| No motion library; CSS plus one IntersectionObserver script | Lightest option in the principles, and adds no dependency |
+| Only content below the fold is hidden, and only by the running script | A failed script, no JavaScript or reduced motion leaves all content visible |
+| No parallax or scroll-linked motion | Reveals and the drawing ticks carry the direction's idea; parallax would add movement without meaning |
+| Phones get less travel and a shorter stagger (12px, 40ms) | The spec asks for motion to be simplified on mobile |
+| Pages build as flat files (`build.format: 'file'`) | Otherwise Workers answers `/med-spas` with a 307 to `/med-spas/`, adding a redirect to every cold-email link and project link |
+| Instrument Serif is preloaded | It loaded late and re-wrapped headlines, shifting the med spa page by 0.09 on phones. Now 0 in production |

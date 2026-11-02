@@ -338,6 +338,15 @@ const { hero } = page;
   details p {
     padding-bottom: 1.25rem;
   }
+  details[open] p {
+    animation: answer var(--dur-ui) var(--ease-out);
+  }
+  @keyframes answer {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
   @media (min-width: 768px) {
     .leaks ul,
     .careful ul {

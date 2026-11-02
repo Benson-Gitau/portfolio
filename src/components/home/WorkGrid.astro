@@ -230,6 +230,18 @@ const filters = [
       items.forEach((item) => {
         item.hidden = value !== 'all' && item.dataset.lane !== value;
       });
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      [...items]
+        .filter((item) => !item.hidden)
+        .forEach((item, i) => {
+          item.animate(
+            [
+              { opacity: 0, transform: 'translateY(12px)' },
+              { opacity: 1, transform: 'none' },
+            ],
+            { duration: 280, delay: i * 40, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'backwards' },
+          );
+        });
     });
   });
 </script>

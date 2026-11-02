@@ -73,6 +73,14 @@ const src = ready
     object-fit: cover;
     border: 0;
   }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .poster :global(img) {
+      transition: transform 600ms var(--ease-out);
+    }
+    .poster:hover :global(img) {
+      transform: scale(1.03);
+    }
+  }
   .no-poster {
     max-width: 30ch;
     padding: 1.25rem;
