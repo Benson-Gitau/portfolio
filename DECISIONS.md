@@ -27,7 +27,6 @@ Approved decisions and deliberate departures from `docs/build-spec.md`. Newest p
 
 ## Open
 
-- The Keystatic production repo in `keystatic.config.ts` (`BennyGitau/portfolio`) is a stand-in until the GitHub repo exists.
 - `site` in `astro.config.mjs` is a stand-in until `[SITE_URL]` is known.
 - `npm audit` reports 2 moderate issues through `@keystatic/core` (`minimatch`). The only offered fix downgrades Keystatic to 0.0.46, so it is not applied. Keystatic's server code runs only on the admin route.
 
@@ -59,3 +58,15 @@ Benson approved **Direction A, The Reconciliation, with Direction C's notificati
 | Demo video titles reuse the project title; med spa duration is "90s", from the spec's "90-second demo" | The player's label needs a title and the spec gives none |
 | Skill categories for Twilio (AI voice), OpenAI and Claude (Automation), Square (E-commerce) are a best fit | The spec's category list has no exact match. Categories are not displayed |
 | Med spa headings "Proof" and "FAQ" come from the spec's section names | The spec gives no separate heading copy |
+
+## Phase 4: home page
+
+| Decision | Why |
+| --- | --- |
+| Keystatic production repo is `Benson-Gitau/portfolio` | Read from the connected git remote |
+| Booking uses a native `<dialog>` | The browser supplies the focus trap, Esc and focus return |
+| Work filter is a small vanilla script, not a React island | It needs no framework, and all cards show without JavaScript |
+| A `*word*` in a section heading sets it as the accent word | Spec: one accent word per major headline. The words are unchanged |
+| Projects with no cover show their first steps as a ledger | Real content rather than a stand-in image. A cover replaces it when supplied |
+| Book buttons are links to `#contact` that open the modal with JavaScript | Booking still works without JavaScript |
+| `settings.ghlEmbedScriptUrl` is a setting, empty until supplied | The script URL could not be confirmed from official docs, so it comes from Benson's embed code |

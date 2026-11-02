@@ -25,6 +25,7 @@
 
   /* Derived roles: decisions recorded in DECISIONS.md */
   --on-accent: #0b1220;
+  --tactile: 0 2px 6px rgb(0 0 0 / 0.28), inset 0 1px 0 rgb(255 255 255 / 0.08);
   --line-strong: var(--teal);
 }
 
@@ -47,11 +48,16 @@
   --glow-b: rgba(20, 184, 166, 0.1);
 
   --on-accent: #121826;
+  --tactile: 0 2px 5px rgb(18 24 38 / 0.08), inset 0 1px 0 rgb(255 255 255 / 0.9);
   --line-strong: var(--teal-text);
 }
 
 :root {
   --blur-glass: 18px;
+  --gutter: clamp(1rem, 2.25vw, 2rem);
+  --space-section: clamp(5rem, 11vw, 10rem);
+  --rule: color-mix(in srgb, var(--text) 26%, transparent);
+  --border-control: color-mix(in srgb, var(--text) 45%, var(--bg));
   --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.25);
   --dur-micro: 160ms;
   --dur-ui: 280ms;
@@ -143,6 +149,83 @@
     font-style: italic;
     font-weight: 400;
     letter-spacing: -0.01em;
+  }
+
+  .h2 .accent-word {
+    white-space: nowrap;
+  }
+
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  .wrap {
+    max-width: 96rem;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .section {
+    padding-block: var(--space-section);
+    scroll-margin-top: 4rem;
+  }
+
+  .h2 {
+    font-size: clamp(2rem, 4.6vw, 4rem);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.25rem;
+    padding-inline: 1.5rem;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-geist);
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: transform var(--dur-micro) var(--ease-out);
+  }
+
+  .btn:active {
+    transform: scale(0.97);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  /* Tactile control: the border carries the state, the shadow only adds feel. */
+  .btn-secondary {
+    border: 1px solid var(--border-control);
+    background: var(--surface);
+    box-shadow: var(--tactile);
+    font-weight: 500;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.625rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-geist-mono);
+    font-size: 0.8125rem;
+  }
+
+  .mono-label {
+    font-family: var(--font-geist-mono);
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  .text-link {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   /* Glass: solid unless the browser can blur and the visitor allows it. */

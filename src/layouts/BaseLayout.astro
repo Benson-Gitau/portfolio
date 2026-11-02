@@ -40,6 +40,21 @@ const { title, description, noindex = false } = Astro.props;
       })();
     </script>
 
+    <!-- UTM values wait in sessionStorage for the booking embed. -->
+    <script is:inline>
+      (function () {
+        try {
+          var from = new URLSearchParams(location.search);
+          var keep = new URLSearchParams();
+          ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].forEach(function (key) {
+            var value = from.get(key);
+            if (value) keep.set(key, value);
+          });
+          if (keep.toString()) sessionStorage.setItem('utm', keep.toString());
+        } catch (e) {}
+      })();
+    </script>
+
     <Font cssVariable="--font-geist" preload />
     <Font cssVariable="--font-inter" preload />
     <Font cssVariable="--font-instrument" />

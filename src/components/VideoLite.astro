@@ -1,0 +1,158 @@
+---
+import { Image } from 'astro:assets';
+import Placeholder from './Placeholder.astro';
+import { hasPlaceholder, resolveImage } from '../lib/content';
+
+interface Props {
+  video: {
+    youtubeId: string;
+    title: string;
+    poster: { image: string | null; alt: string };
+    transcript: string;
+    durationLabel: string;
+  };
+  ratio?: string;
+  position?: string;
+  priority?: boolean;
+  sizes?: string;
+}
+const { video, ratio = '16 / 9', position = '50% 22%', priority = false, sizes = '(min-width: 1024px) 40vw, 100vw' } = Astro.props;
+const poster = await resolveImage(video.poster, `${video.title} poster`);
+const ready = !hasPlaceholder(video.youtubeId) && Boolean(video.youtubeId);
+const src = ready
+  ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(video.youtubeId)}?autoplay=1&cc_load_policy=1&rel=0&playsinline=1`
+  : '';
+---
+
+<figure class="video-lite" data-video-lite data-src={src} data-title={video.title}>
+  <div class="frame glass">
+    <div class="poster" data-poster style={`aspect-ratio:${ratio}`}>
+      {poster ? (
+        <Image src={poster.src} alt={poster.alt} widths={[480, 800, 1200]} sizes={sizes} format="webp" quality={78} style={`object-position:${position}`} loading={priority ? 'eager' : 'lazy'} fetchpriority={priority ? 'high' : 'auto'} />
+      ) : (
+        <p class="no-poster">{video.title}</p>
+      )}
+      <button type="button" class="play" aria-label={`Play video: ${video.title}`}>
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.53.85l10.5-6.5a1 1 0 0 0 0-1.7L9.53 4.65A1 1 0 0 0 8 5.5Z"></path></svg>
+      </button>
+      {video.durationLabel && <span class="dur">{video.durationLabel}</span>}
+    </div>
+  </div>
+  {import.meta.env.DEV && !ready && <p class="status"><Placeholder text={video.youtubeId} /></p>}
+  <p class="status" data-status role="status"></p>
+  {video.transcript && (
+    <details class="transcript">
+      <summary>Read transcript</summary>
+      <p><Placeholder text={video.transcript} /></p>
+    </details>
+  )}
+</figure>
+
+<style>
+  .video-lite {
+    margin: 0;
+    min-width: 0;
+  }
+  .frame {
+    padding: 0.5rem;
+    border-radius: var(--radius-lg);
+  }
+  .poster {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--surface);
+  }
+  .poster :global(img),
+  .poster :global(iframe) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 0;
+  }
+  .no-poster {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    padding: 1.5rem;
+    font-family: var(--font-geist);
+    font-weight: 500;
+    text-align: center;
+  }
+  .play {
+    position: absolute;
+    left: 1rem;
+    bottom: 1rem;
+    display: grid;
+    place-items: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: var(--on-accent);
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.3);
+    transition: transform var(--dur-micro) var(--ease-out);
+  }
+  .play:active {
+    transform: scale(0.95);
+  }
+  .dur {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    padding: 0.125rem 0.625rem;
+    border-radius: var(--radius-pill);
+    background: #0b1220;
+    color: #f5f7fa;
+    font-family: var(--font-geist-mono);
+    font-size: 0.8125rem;
+  }
+  .status:empty {
+    display: none;
+  }
+  .status {
+    margin-top: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+  }
+  .transcript summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .transcript p {
+    padding: 0.5rem;
+    color: var(--text);
+    font-size: 0.9375rem;
+  }
+</style>
+
+<script>
+  document.addEventListener('click', (event) => {
+    const button = (event.target as Element).closest<HTMLButtonElement>('[data-video-lite] .play');
+    if (!button) return;
+    const root = button.closest<HTMLElement>('[data-video-lite]')!;
+    const src = root.dataset.src;
+    if (!src) {
+      root.querySelector('[data-status]')!.textContent = 'This video is not available yet.';
+      return;
+    }
+    const iframe = document.createElement('iframe');
+    iframe.src = src;
+    iframe.title = root.dataset.title ?? 'Video';
+    iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
+    iframe.allowFullscreen = true;
+    iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+    const poster = root.querySelector<HTMLElement>('[data-poster]')!;
+    poster.replaceChildren(iframe);
+    iframe.focus();
+  });
+</script>

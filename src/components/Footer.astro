@@ -1,0 +1,67 @@
+---
+import Placeholder from './Placeholder.astro';
+import { getSettings, hasPlaceholder } from '../lib/content';
+
+const settings = await getSettings();
+const agencyLinked = !hasPlaceholder(settings.agencyUrl) && Boolean(settings.agencyUrl);
+const year = new Date().getFullYear();
+---
+
+<footer class="footer wrap">
+  <div class="id">
+    <p class="name">Benson Gitau</p>
+    <p>{settings.footerRole}</p>
+    <p>{settings.footerLocation}</p>
+    <p>© {year}</p>
+  </div>
+  <nav aria-label="Footer">
+    <a href="/#work">Work</a>
+    <a href="/#services">Services</a>
+    {agencyLinked ? <a href={settings.agencyUrl}>{settings.agencyName}</a> : <span><Placeholder text={settings.agencyName} /></span>}
+    <a href={settings.linkedinUrl}>LinkedIn</a>
+    <a href={settings.githubUrl}>GitHub</a>
+    <a href={settings.xUrl}>X</a>
+  </nav>
+</footer>
+
+<style>
+  .footer {
+    display: grid;
+    gap: 2rem;
+    padding-block: 2.5rem;
+    border-top: 1px solid var(--rule);
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+  }
+  .name {
+    color: var(--text);
+    font-family: var(--font-geist);
+    font-weight: 600;
+    font-size: 1.125rem;
+  }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.25rem;
+  }
+  nav a,
+  nav span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 0.5rem;
+    color: var(--text);
+  }
+  nav a {
+    text-decoration: underline;
+    text-decoration-color: var(--rule);
+    text-underline-offset: 4px;
+  }
+  @media (min-width: 768px) {
+    .footer {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+  }
+</style>

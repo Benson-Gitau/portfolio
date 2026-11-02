@@ -31,7 +31,7 @@ heroCards:
   - text: Reminder sent
 problem:
   heading: >-
-    Most wellness businesses don't have a lead problem. They have a follow-up
+    Most wellness businesses don't have a lead problem. They have a *follow-up*
     problem.
   cards:
     - title: Calls go to voicemail.
@@ -48,7 +48,7 @@ problem:
         copies data instead of looking after clients.
   closingLine: Each one is revenue you've already paid to attract.
 outcomes:
-  heading: What it looks like when it's fixed
+  heading: What it looks like when it's *fixed*
   items:
     - title: Every inquiry gets a fast response.
       text: >-
@@ -61,7 +61,7 @@ outcomes:
         Your booking platform, CRM and payments share data, so your team stops
         retyping it.
 work:
-  heading: Systems I've built
+  heading: Systems I've *built*
   intro: >-
     Three demo builds for wellness businesses, and real results from e-commerce
     and operations clients. Demo builds are labelled.
@@ -74,7 +74,7 @@ work:
     and Etsy · a remote-jobs platform for the Kenyan market · a real estate
     marketing website · a natural foods Shopify store.
 services:
-  heading: Ways I can help
+  heading: Ways I can *help*
   items:
     - title: AI receptionist
       text: >-
@@ -93,7 +93,7 @@ services:
     - title: E-commerce automation
       text: Orders, inventory, CRM and reporting for Shopify and Square stores.
 process:
-  heading: How a project runs
+  heading: How a project *runs*
   steps:
     - title: Audit
       text: >-
@@ -110,7 +110,7 @@ process:
     - title: Support
       text: Optional monthly monitoring and improvements.
 about:
-  heading: Systems that fit how your business actually runs
+  heading: Systems that fit how your business *actually* runs
   text: >-
     Before automation, I spent five years in operations at Equity Bank, where I
     learned that most problems are process problems first and tool problems
@@ -126,9 +126,9 @@ about:
     alt: Benson Gitau smiling, in a dark suit and glasses
   agencyLine: My client work runs through [AGENCY NAME] →
 proof:
-  heading: From the people I've built for
+  heading: From the people I've *built* for
 finalCta:
-  heading: Tell me where bookings slip through. I'll show you the system I'd build.
+  heading: Tell me where bookings *slip through*. I'll show you the system I'd build.
   text: >-
     A 20-minute call, no pitch deck. You leave with a clear picture of what to
     fix first, whether or not we work together.

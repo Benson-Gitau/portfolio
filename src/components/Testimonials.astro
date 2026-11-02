@@ -1,0 +1,64 @@
+---
+// Renders nothing, including its heading, unless an approved testimonial qualifies.
+import Heading from './Heading.astro';
+import VideoLite from './VideoLite.astro';
+import type { getTestimonials } from '../lib/content';
+
+interface Props {
+  heading: string;
+  items: Awaited<ReturnType<typeof getTestimonials>>;
+}
+const { heading, items } = Astro.props;
+---
+
+{items.length > 0 && (
+  <section class="proof section wrap">
+    <Heading class="h2" text={heading} />
+    <ul>
+      {items.map((item) => (
+        <li>
+          {item.format.discriminant === 'text' ? (
+            <blockquote>{item.format.value.quote}</blockquote>
+          ) : (
+            <VideoLite video={item.format.value} />
+          )}
+          <p class="who">
+            <strong>{item.personName}</strong>{item.role && `, ${item.role}`}{item.company && `, ${item.company}`}
+          </p>
+          <p class="mono-label source">{item.source}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<style>
+  ul {
+    display: grid;
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+  li {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule);
+  }
+  blockquote {
+    font-family: var(--font-geist);
+    font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+  }
+  .who {
+    margin-top: 1rem;
+  }
+  .source {
+    margin-top: 0.25rem;
+    color: var(--text-muted);
+  }
+  @media (min-width: 1024px) {
+    ul {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

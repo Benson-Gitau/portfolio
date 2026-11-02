@@ -1,0 +1,19 @@
+---
+// The ledger mark. Open means unreconciled; ticked means closed.
+interface Props {
+  open?: boolean;
+  class?: string;
+}
+const { open = false, class: className } = Astro.props;
+---
+
+<svg class:list={['mark', className]} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  {open ? <circle cx="12" cy="12" r="8.5" stroke-dasharray="3 4.5" stroke-width="2"></circle> : <path pathLength="1" d="M4 13l5 5L20 6"></path>}
+</svg>
+
+<style>
+  .mark {
+    display: block;
+    flex: none;
+  }
+</style>

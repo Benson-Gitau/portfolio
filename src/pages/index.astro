@@ -1,48 +1,25 @@
 ---
-// Phase 1 token proof. Replaced by the real home page in Phase 4.
-import BaseLayout from '../layouts/BaseLayout.astro';
-import ThemeToggle from '../components/ThemeToggle.astro';
+import About from '../components/home/About.astro';
+import FinalCta from '../components/home/FinalCta.astro';
+import Hero from '../components/home/Hero.astro';
+import Leaks from '../components/home/Leaks.astro';
+import Process from '../components/home/Process.astro';
+import Services from '../components/home/Services.astro';
+import WorkGrid from '../components/home/WorkGrid.astro';
+import Testimonials from '../components/Testimonials.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { getFeaturedTestimonials, getHome } from '../lib/content';
 
-const swatches = ['bg', 'surface', 'accent', 'teal', 'danger'];
+const [home, testimonials] = await Promise.all([getHome(), getFeaturedTestimonials()]);
 ---
 
-<BaseLayout title="Token check" noindex>
-  <main id="main" class="mx-auto flex max-w-3xl flex-col gap-10 px-4 py-12">
-    <header class="flex items-center justify-between gap-4">
-      <h1 class="text-3xl">Token check</h1>
-      <ThemeToggle />
-    </header>
-
-    <section class="flex flex-col gap-3">
-      <h2 class="text-4xl">Every slot <span class="accent-word">booked</span>.</h2>
-      <p>Inter body text at 16px on the page background.</p>
-      <p class="text-muted">Muted text on the page background.</p>
-      <p class="font-mono text-accent-text">~80% Geist Mono accent text</p>
-      <p class="font-mono text-teal-text">Demo build Geist Mono teal text</p>
-      <p class="text-danger">Danger text</p>
-    </section>
-
-    <section class="rounded-lg bg-surface p-6">
-      <h2 class="text-xl">Surface</h2>
-      <p class="text-muted">Muted text on a surface.</p>
-      <button type="button" class="mt-4 min-h-11 rounded-pill bg-accent px-5 font-heading font-medium text-on-accent">
-        Book a call
-      </button>
-    </section>
-
-    <section class="relative overflow-hidden rounded-lg p-8" style="background: radial-gradient(circle at top left, var(--glow-a), transparent 60%), radial-gradient(circle at bottom right, var(--glow-b), transparent 60%), var(--bg)">
-      <div class="glass rounded-md p-6">
-        <h2 class="text-xl">Glass over the hero glows</h2>
-        <p class="text-muted">Muted text on glass.</p>
-      </div>
-    </section>
-
-    <ul class="grid grid-cols-5 gap-2">
-      {swatches.map((name) => (
-        <li class="flex h-16 items-end rounded-sm border border-glass-border p-2 font-mono text-xs" style={`background: var(--${name}); color: var(--${['accent', 'teal', 'danger'].includes(name) ? 'on-accent' : 'text'})`}>
-          {name}
-        </li>
-      ))}
-    </ul>
-  </main>
-</BaseLayout>
+<SiteLayout title={home.seo.title} description={home.seo.description}>
+  <Hero hero={home.hero} cards={home.heroCards} />
+  <Leaks problem={home.problem} outcomes={home.outcomes} />
+  <WorkGrid work={home.work} />
+  <Services services={home.services} />
+  <Process process={home.process} />
+  <About about={home.about} />
+  <Testimonials heading={home.proof.heading} items={testimonials} />
+  <FinalCta cta={home.finalCta} />
+</SiteLayout>

@@ -39,7 +39,7 @@ const seo = fields.object({ title: text('Page title'), description: longText('Me
 
 export default config({
   storage: import.meta.env.PROD
-    ? { kind: 'github', repo: 'BennyGitau/portfolio' }
+    ? { kind: 'github', repo: 'Benson-Gitau/portfolio' }
     : { kind: 'local' },
   ui: { brand: { name: 'Benson Gitau' } },
   collections: {
@@ -251,6 +251,7 @@ export default config({
       path: 'src/content/settings',
       schema: {
         ghlCalendarEmbedUrl: text('GoHighLevel calendar embed URL'),
+        ghlEmbedScriptUrl: text('GoHighLevel embed script URL', 'Optional. The script src from the calendar embed code. Loads only with the calendar.'),
         email: text('Email'),
         linkedinUrl: text('LinkedIn URL'),
         githubUrl: text('GitHub URL'),

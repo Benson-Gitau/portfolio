@@ -1,0 +1,99 @@
+---
+import BookingEmbed from './BookingEmbed.astro';
+---
+
+<dialog class="booking glass" data-booking-modal aria-labelledby="booking-title">
+  <div class="head">
+    <h2 id="booking-title">Book a call</h2>
+    <button type="button" class="close" data-booking-close aria-label="Close booking">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+    </button>
+  </div>
+  <BookingEmbed loadOn="open" />
+</dialog>
+
+<style>
+  .booking {
+    width: min(100% - 1.5rem, 46rem);
+    max-height: min(100dvh - 1.5rem, 56rem);
+    margin: auto;
+    padding: 0.75rem;
+    overflow: auto;
+    border-radius: var(--radius-lg);
+    color: var(--text);
+    /* Long reading of a form: near-solid, with the blur only around the edges. */
+    background: var(--glass-fallback);
+    opacity: 0;
+    transform: scale(0.97);
+    transition:
+      opacity var(--dur-ui) var(--ease-out),
+      transform var(--dur-ui) var(--ease-out),
+      overlay var(--dur-ui) allow-discrete,
+      display var(--dur-ui) allow-discrete;
+  }
+  .booking[open] {
+    opacity: 1;
+    transform: none;
+  }
+  @starting-style {
+    .booking[open] {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+  }
+  .booking::backdrop {
+    background: rgb(5 9 18 / 0.6);
+  }
+  .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.25rem 0.25rem 0.75rem 0.75rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  .close {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    box-shadow: var(--tactile);
+    cursor: pointer;
+    transition: transform var(--dur-micro) var(--ease-out);
+  }
+  .close:active {
+    transform: scale(0.95);
+  }
+  :global(html:has(dialog[data-booking-modal][open])) {
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  const modal = document.querySelector<HTMLDialogElement>('[data-booking-modal]');
+  let opener: HTMLElement | null = null;
+
+  document.addEventListener('click', (event) => {
+    const target = event.target as Element;
+    const trigger = target.closest<HTMLElement>('[data-book]');
+    if (trigger && modal) {
+      event.preventDefault();
+      opener = trigger;
+      modal.showModal();
+      modal.querySelector('[data-booking-embed]')?.dispatchEvent(new CustomEvent('booking:load', { bubbles: true }));
+      const w = window as unknown as { gtag?: (...args: unknown[]) => void; dataLayer?: unknown[] };
+      w.gtag?.('event', 'book_call_open');
+      w.dataLayer?.push({ event: 'book_call_open' });
+      return;
+    }
+    // A click on the backdrop lands on the dialog element itself.
+    if (target.closest('[data-booking-close]') || target === modal) modal?.close();
+  });
+
+  modal?.addEventListener('close', () => opener?.focus());
+</script>

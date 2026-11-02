@@ -1,0 +1,174 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+
+const links = [
+  { href: '/#work', label: 'Work' },
+  { href: '/#services', label: 'Services' },
+  { href: '/#process', label: 'Process' },
+  { href: '/#about', label: 'About' },
+];
+---
+
+<div class="nav-shell" data-nav>
+  <header class="bar glass">
+    <a class="brand" href="/#top">Benson Gitau</a>
+    <nav aria-label="Main" class="links">
+      {links.map((link) => <a href={link.href}>{link.label}</a>)}
+    </nav>
+    <div class="end">
+      <ThemeToggle />
+      <a class="book btn btn-primary" href="/#contact" data-book>Book a call</a>
+      <button type="button" class="menu" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"></path></svg>
+      </button>
+    </div>
+  </header>
+  <nav id="mobile-menu" class="panel" aria-label="Menu" data-menu hidden>
+    {links.map((link) => <a href={link.href}>{link.label}</a>)}
+    <a class="btn btn-primary" href="/#contact" data-book>Book a call</a>
+  </nav>
+</div>
+<div class="sentinel" data-nav-sentinel aria-hidden="true"></div>
+
+<style>
+  .nav-shell {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    padding: 0.75rem;
+  }
+  .sentinel {
+    position: absolute;
+    top: 0;
+    height: 80px;
+    width: 1px;
+    pointer-events: none;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.375rem 0.5rem 0.375rem 1.25rem;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 6px 20px rgb(0 0 0 / 0.14);
+  }
+  /* After scrolling the bar turns solid, so page text can't muddy it. */
+  [data-scrolled] .bar {
+    background: var(--glass-fallback);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--font-geist);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+  .links {
+    display: none;
+    gap: 0.25rem;
+  }
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 0.875rem;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-geist);
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .links a:hover {
+      background: var(--accent-soft);
+    }
+  }
+  .end {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .book {
+    display: none;
+    min-height: 44px;
+    padding-inline: 1.125rem;
+    font-size: 0.9375rem;
+    white-space: nowrap;
+  }
+  .menu {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    cursor: pointer;
+  }
+  .panel {
+    display: grid;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    background: var(--glass-fallback);
+    box-shadow: var(--shadow-soft);
+  }
+  .panel[hidden] {
+    display: none;
+  }
+  .panel a:not(.btn) {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 0.5rem;
+    font-family: var(--font-geist);
+    font-weight: 500;
+  }
+  @media (min-width: 768px) {
+    .links {
+      display: flex;
+    }
+    .book {
+      display: inline-flex;
+    }
+    .menu,
+    .panel {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  const shell = document.querySelector<HTMLElement>('[data-nav]');
+  const sentinel = document.querySelector('[data-nav-sentinel]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+
+  if (shell && sentinel) {
+    new IntersectionObserver(([entry]) => shell.toggleAttribute('data-scrolled', !entry.isIntersecting)).observe(sentinel);
+  }
+
+  function setMenu(open: boolean) {
+    if (!toggle || !menu) return;
+    menu.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+
+  toggle?.addEventListener('click', () => setMenu(menu?.hidden ?? false));
+  menu?.addEventListener('click', (event) => {
+    if ((event.target as Element).closest('a')) setMenu(false);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && menu && !menu.hidden) {
+      setMenu(false);
+      toggle?.focus();
+    }
+  });
+</script>

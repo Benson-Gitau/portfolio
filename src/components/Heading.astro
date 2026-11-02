@@ -1,0 +1,13 @@
+---
+// A *word* in a content heading is set as that headline's one accent word.
+interface Props {
+  text: string;
+  as?: 'h1' | 'h2' | 'h3';
+  class?: string;
+  id?: string;
+}
+const { text, as: Tag = 'h2', class: className, id } = Astro.props;
+const parts = text.split(/\*([^*]+)\*/);
+---
+
+<Tag class={className} id={id}>{parts.map((part, i) => (i % 2 ? <span class="accent-word">{part}</span> : part))}</Tag>

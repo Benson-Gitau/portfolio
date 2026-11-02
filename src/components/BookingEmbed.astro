@@ -1,0 +1,110 @@
+---
+import Placeholder from './Placeholder.astro';
+import { getSettings, hasPlaceholder } from '../lib/content';
+
+interface Props {
+  /** "view" loads when scrolled near; "open" waits for the modal. */
+  loadOn: 'view' | 'open';
+}
+const { loadOn } = Astro.props;
+const settings = await getSettings();
+const isUrl = (value: string) => /^https:\/\//.test(value);
+const url = isUrl(settings.ghlCalendarEmbedUrl) ? settings.ghlCalendarEmbedUrl : '';
+const script = isUrl(settings.ghlEmbedScriptUrl) ? settings.ghlEmbedScriptUrl : '';
+---
+
+<div class="embed" data-booking-embed data-load-on={loadOn} data-src={url} data-script={script}>
+  <div class="slot" data-slot hidden></div>
+  <!-- Visible until a calendar loads, so booking works without JavaScript or if the embed fails. -->
+  <div class="fallback" data-fallback>
+    <p>The calendar isn't showing here.</p>
+    {import.meta.env.DEV && hasPlaceholder(settings.ghlCalendarEmbedUrl) && <p><Placeholder text={settings.ghlCalendarEmbedUrl} /></p>}
+    <div class="actions">
+      {url && <a class="btn btn-primary" href={url} target="_blank" rel="noopener">Open the booking page<span class="sr-only"> (opens in a new tab)</span></a>}
+      <a class="btn btn-secondary" href={`mailto:${settings.email}`}>Email {settings.email}</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .slot {
+    min-height: 44rem;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: #fff;
+  }
+  .slot :global(iframe) {
+    display: block;
+    width: 100%;
+    height: 44rem;
+    border: 0;
+  }
+  .fallback {
+    padding: 1.5rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-md);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .actions a {
+    overflow-wrap: anywhere;
+  }
+</style>
+
+<script>
+  function utmQuery() {
+    try {
+      return sessionStorage.getItem('utm') ?? '';
+    } catch {
+      return '';
+    }
+  }
+
+  function load(root: HTMLElement) {
+    const src = root.dataset.src;
+    if (!src || root.dataset.loaded) return;
+    root.dataset.loaded = 'true';
+
+    const slot = root.querySelector<HTMLElement>('[data-slot]')!;
+    const fallback = root.querySelector<HTMLElement>('[data-fallback]')!;
+    const url = new URL(src);
+    new URLSearchParams(utmQuery()).forEach((value, key) => url.searchParams.set(key, value));
+
+    const iframe = document.createElement('iframe');
+    iframe.src = url.toString();
+    iframe.title = 'Book a call with Benson Gitau';
+    iframe.loading = 'eager';
+    slot.append(iframe);
+    slot.hidden = false;
+    fallback.hidden = true;
+
+    // Cross-origin frames never report errors, so a slow load brings the fallback back.
+    const timer = setTimeout(() => (fallback.hidden = false), 10000);
+    iframe.addEventListener('load', () => clearTimeout(timer));
+
+    const script = root.dataset.script;
+    if (script && !document.querySelector(`script[src="${script}"]`)) {
+      const tag = document.createElement('script');
+      tag.src = script;
+      tag.async = true;
+      document.head.append(tag);
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-booking-embed][data-load-on="view"]').forEach((root) => {
+    new IntersectionObserver(
+      ([entry], observer) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        load(root);
+      },
+      { rootMargin: '300px' },
+    ).observe(root);
+  });
+
+  document.addEventListener('booking:load', (event) => load(event.target as HTMLElement));
+</script>
