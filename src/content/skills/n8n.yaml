@@ -1,0 +1,5 @@
+name: n8n
+category: Automation
+icon: null
+showInToolsStrip: true
+order: 2

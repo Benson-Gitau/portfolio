@@ -1,0 +1,5 @@
+name: PostgreSQL
+category: Data
+icon: null
+showInToolsStrip: true
+order: 13

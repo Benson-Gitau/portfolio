@@ -1,0 +1,10 @@
+---
+// Renders content text, visibly marking any [PLACEHOLDER] in development.
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+const parts = import.meta.env.DEV ? text.split(/(\[[^\]]+\])/) : [text];
+---
+
+{parts.map((part) => (import.meta.env.DEV && /^\[[^\]]+\]$/.test(part) ? <mark class="placeholder-mark">{part}</mark> : part))}

@@ -14,7 +14,7 @@ const isDev = process.argv.includes('dev');
 export default defineConfig({
   // Replaced by settings.siteUrl once [SITE_URL] is known.
   site: 'https://example.com',
-  adapter: isDev ? undefined : cloudflare({ imageService: 'compile' }),
+  adapter: isDev ? undefined : cloudflare({ imageService: 'compile', prerenderEnvironment: 'node' }),
   session: false,
   integrations: [
     react(),

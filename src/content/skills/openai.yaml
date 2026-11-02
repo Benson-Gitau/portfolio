@@ -1,0 +1,5 @@
+name: OpenAI
+category: Automation
+icon: null
+showInToolsStrip: true
+order: 10
