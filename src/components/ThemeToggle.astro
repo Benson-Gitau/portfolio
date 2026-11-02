@@ -1,0 +1,76 @@
+---
+// Small tactile control: the shadow is backed by a border and an icon change,
+// so its state never depends on shadow alone.
+---
+
+<button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch to light theme">
+  <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"></path>
+  </svg>
+  <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"></path>
+  </svg>
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--toggle-border);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition: transform var(--dur-micro) var(--ease-out);
+    --toggle-border: color-mix(in srgb, var(--text) 45%, var(--bg));
+  }
+
+  .theme-toggle:active {
+    transform: scale(0.95);
+  }
+
+  .theme-toggle svg {
+    grid-area: 1 / 1;
+  }
+
+  .icon-moon {
+    display: none;
+  }
+
+  :global([data-theme='light']) .icon-sun {
+    display: none;
+  }
+
+  :global([data-theme='light']) .icon-moon {
+    display: block;
+  }
+</style>
+
+<script>
+  function setLabels() {
+    const current = document.documentElement.dataset.theme;
+    const next = current === 'light' ? 'dark' : 'light';
+    document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+      button.setAttribute('aria-label', `Switch to ${next} theme`);
+    });
+  }
+
+  document.addEventListener('click', (event) => {
+    const target = event.target as Element | null;
+    if (!target?.closest('[data-theme-toggle]')) return;
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = next;
+    try {
+      localStorage.setItem('theme', next);
+    } catch {
+      // Storage blocked: the choice lasts for this page view only.
+    }
+    setLabels();
+  });
+
+  document.addEventListener('astro:page-load', setLabels);
+  setLabels();
+</script>

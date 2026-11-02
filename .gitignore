@@ -22,3 +22,11 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# cloudflare
+.wrangler/
+.dev.vars*
+
+# tool output
+.playwright-mcp/
+.taste-skill/
