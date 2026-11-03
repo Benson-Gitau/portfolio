@@ -1,5 +1,6 @@
 // @ts-check
-import { defineConfig, fontProviders } from 'astro/config';
+import { defineConfig, envField, fontProviders } from 'astro/config';
+import { loadEnv } from 'vite';
 import cloudflare from '@astrojs/cloudflare';
 import markdoc from '@astrojs/markdoc';
 import react from '@astrojs/react';
@@ -13,8 +14,14 @@ import { fileURLToPath } from 'node:url';
 // Keystatic's local storage needs Node, so dev runs without the Workers adapter.
 const isDev = process.argv.includes('dev');
 
-// settings.siteUrl drives canonical URLs and the sitemap. Neither exists until it is a real URL.
-const configuredSite = readFileSync('src/content/settings.yaml', 'utf8').match(/^siteUrl:\s*['"]?(https:\/\/[^'"\s]+)/m)?.[1];
+// PUBLIC_SITE_URL (a Workers Builds build variable, or .env locally) drives canonical URLs, share
+// images and the sitemap, with Keystatic's settings.siteUrl as the fallback. Neither is used until
+// it is a real https URL, so a stand-in domain never reaches search engines.
+const env = loadEnv(process.env.NODE_ENV ?? 'production', process.cwd(), '');
+const realUrl = (/** @type {string | undefined} */ value) => (value && /^https:\/\/[^\s[\]]+$/.test(value) ? value : undefined);
+const configuredSite =
+  realUrl(env.PUBLIC_SITE_URL) ??
+  realUrl(readFileSync('src/content/settings.yaml', 'utf8').match(/^siteUrl:\s*['"]?([^'"\s]+)/m)?.[1]);
 
 // Lists any [PLACEHOLDER] still in the built pages, so an unfinished value cannot ship unnoticed.
 const placeholderReport = {
@@ -26,14 +33,17 @@ const placeholderReport = {
       for (const file of readdirSync(root, { recursive: true })) {
         if (!String(file).endsWith('.html')) continue;
         const text = readFileSync(join(root, String(file)), 'utf8').replace(/<(script|style)[\s\S]*?<\/\1>/g, '').replace(/<[^>]+>/g, ' ');
-        for (const match of text.matchAll(/\[[A-Z][A-Z0-9_ ]+\]/g)) found.add(match[0]);
+        for (const match of text.matchAll(/\[[A-Z][A-Za-z0-9_ ]+\]/g)) found.add(match[0]);
       }
       if (found.size) logger.warn(`Placeholders still in built pages: ${[...found].join(', ')}`);
     },
   },
 };
 
-// Public pages are prerendered. Only the /keystatic admin runs on the Worker.
+// Output stays static: every page is prerendered. Only the routes the Keystatic integration injects
+// (/keystatic and /api/keystatic, prerender: false) run on the Worker.
+// imageService 'compile': images are optimised with sharp during the build (in Node) and the Worker
+// gets the no-op service, so sharp is never needed at runtime and no Images binding is provisioned.
 export default defineConfig({
   build: { format: 'file' },
   site: configuredSite,
@@ -44,14 +54,25 @@ export default defineConfig({
     markdoc(),
     keystatic(),
     placeholderReport,
-    ...(configuredSite ? [sitemap({ filter: (page) => !page.includes('/keystatic') && !page.includes('/404') })] : []),
+    ...(configuredSite
+      ? [sitemap({ filter: (page) => !page.includes('/keystatic') && !page.includes('/api/') && !page.includes('/404') })]
+      : []),
   ],
+  // Keystatic reads its GitHub credentials at runtime through getSecret() (Worker secrets). They are
+  // optional here so a build without them passes, and /keystatic explains what is missing.
+  env: {
+    schema: {
+      KEYSTATIC_GITHUB_CLIENT_ID: envField.string({ context: 'server', access: 'secret', optional: true }),
+      KEYSTATIC_GITHUB_CLIENT_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
+      KEYSTATIC_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
+    },
+  },
   fonts: [
     {
       name: 'Geist',
       cssVariable: '--font-geist',
       provider: fontProviders.fontsource(),
-      weights: [500, 600],
+      weights: [300, 400, 500, 600],
       styles: ['normal'],
       subsets: ['latin'],
       fallbacks: ['system-ui', 'sans-serif'],

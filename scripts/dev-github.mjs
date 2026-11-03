@@ -1,0 +1,13 @@
+// `npm run dev:github`: the dev server with Keystatic in GitHub mode instead of local mode.
+// Used once to create the Keystatic GitHub App (DEPLOY.md, step 3): app creation only works in
+// Node, not on the Worker. Stop any running `npm run dev` first (Astro allows one dev server).
+// Works the same on Windows, macOS and Linux. Extra arguments go to `astro dev`.
+import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+
+const astroBin = fileURLToPath(new URL('../node_modules/astro/bin/astro.mjs', import.meta.url));
+const child = spawn(process.execPath, [astroBin, 'dev', ...process.argv.slice(2)], {
+  stdio: 'inherit',
+  env: { ...process.env, PUBLIC_KEYSTATIC_STORAGE: 'github' },
+});
+child.on('exit', (code) => process.exit(code ?? 0));

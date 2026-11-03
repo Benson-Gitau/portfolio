@@ -37,10 +37,16 @@ const strings = (label: string) => fields.array(text('Text'), { label, itemLabel
 
 const seo = fields.object({ title: text('Page title'), description: longText('Meta description') }, { label: 'SEO' });
 
+// Production edits commit to GitHub; development edits the files on disk. `npm run dev:github`
+// sets PUBLIC_KEYSTATIC_STORAGE=github to run GitHub mode locally (needed once, to create the GitHub App).
+const repo = {
+  owner: import.meta.env.PUBLIC_KEYSTATIC_REPO_OWNER || 'Benson-Gitau',
+  name: import.meta.env.PUBLIC_KEYSTATIC_REPO_NAME || 'portfolio',
+};
+const useGitHub = import.meta.env.PROD || import.meta.env.PUBLIC_KEYSTATIC_STORAGE === 'github';
+
 export default config({
-  storage: import.meta.env.PROD
-    ? { kind: 'github', repo: 'Benson-Gitau/portfolio' }
-    : { kind: 'local' },
+  storage: useGitHub ? { kind: 'github', repo } : { kind: 'local' },
   ui: { brand: { name: 'Benson Gitau' } },
   collections: {
     projects: collection({
@@ -51,6 +57,7 @@ export default config({
       columns: ['type', 'industry', 'order'],
       schema: {
         title: fields.slug({ name: { label: 'Title', description: 'Outcome headline.' } }),
+        cardTitle: text('Card title', 'Short name on the home work grid, for example "Med Spa Speed-to-Lead".'),
         accentWord: text('Accent word', 'One word from the title, set in the accent style on the project page.'),
         type: fields.select({
           label: 'Type',
@@ -85,6 +92,9 @@ export default config({
         designedTo: longText('Designed to', 'Demo projects only.'),
         tools: fields.array(fields.relationship({ label: 'Tool', collection: 'skills' }), { label: 'Tools', itemLabel: (p) => p.value ?? 'Tool' }),
         coverImage: image('Cover image'),
+        panelImage: image('Panel image'),
+        panelLabel: text('Panel placeholder label', 'Shown in development while there is no panel image or cover, for example "Screenshot · AI receptionist call log".'),
+        panelOrder: fields.integer({ label: 'Panel position', description: '1–4 places it in the home image panel; 0 leaves it out.', defaultValue: 0 }),
         gallery: fields.array(
           fields.object({
             image: fields.image({ label: 'Image', directory: imagesDir, publicPath: `/${imagesDir}/` }),
@@ -107,27 +117,43 @@ export default config({
       label: 'Testimonials',
       path: 'src/content/testimonials/*',
       slugField: 'personName',
-      columns: ['source', 'permissionToPublish'],
+      columns: ['source', 'permissionToPublish', 'order'],
       schema: {
-        personName: fields.slug({ name: { label: 'Person name' } }),
-        format: fields.conditional(
+        personName: fields.slug({ name: { label: 'Person name', description: 'Shown only when not anonymous and "Name approved" is ticked.' } }),
+        type: fields.conditional(
           fields.select({
-            label: 'Format',
+            label: 'Type',
             options: [{ label: 'Text', value: 'text' }, { label: 'Video', value: 'video' }],
             defaultValue: 'text',
           }),
-          { text: fields.object({ quote: longText('Quote') }), video: video('Video') },
+          {
+            text: fields.object({
+              quote: longText('Quote'),
+              pullQuote: fields.checkbox({ label: 'Pull quote', description: 'Renders a short quote as a coloured card.', defaultValue: false }),
+            }),
+            video: fields.object({
+              videoId: text('YouTube ID'),
+              poster: image('Poster'),
+              duration: text('Duration', 'For example "0:45".'),
+              orientation: fields.select({
+                label: 'Orientation',
+                options: [{ label: 'Portrait', value: 'portrait' }, { label: 'Landscape', value: 'landscape' }],
+                defaultValue: 'portrait',
+              }),
+            }),
+          },
         ),
-        role: text('Role'),
-        company: text('Company', 'Rendered only when "Name approved" is ticked.'),
+        role: text('Role', 'For example "Owner".'),
+        practiceType: text('Practice type', 'For example "Med spa, Austin".'),
+        source: fields.select({
+          label: 'Source',
+          options: [{ label: 'Direct', value: 'direct' }, { label: 'Upwork', value: 'upwork' }, { label: 'Fiverr', value: 'fiverr' }],
+          defaultValue: 'direct',
+        }),
+        anonymous: fields.checkbox({ label: 'Anonymous', description: 'Never shows a name or photo.', defaultValue: true }),
         nameApproved: fields.checkbox({ label: 'Name approved', defaultValue: false }),
         photo: image('Photo'),
         project: fields.relationship({ label: 'Project', collection: 'projects' }),
-        source: fields.select({
-          label: 'Source',
-          options: ['Direct', 'Upwork', 'Fiverr', 'LinkedIn'].map((v) => ({ label: v, value: v })),
-          defaultValue: 'Direct',
-        }),
         permissionToPublish: fields.checkbox({
           label: 'Permission to publish',
           description: 'Left out of the build completely when unticked.',
@@ -163,24 +189,35 @@ export default config({
         seo,
         hero: fields.object(
           {
-            eyebrow: text('Eyebrow'),
-            headlineBefore: longText('Headline before accent word'),
-            accentWord: text('Accent word'),
-            headlineAfter: text('Headline after accent word'),
-            subline: longText('Subline'),
+            greeting: text('Title line 1', 'Geist, for example "Hi, I’m Benson".'),
+            title: text('Title line 2', 'Serif italic, for example "Automation Consultant".'),
+            heroPortrait: image('Cut-out portrait', 'src/assets/photos'),
+            available: text('Available pill'),
+            audience: text('Audience line'),
+            statement: longText('Statement'),
             primaryCta: text('Primary button'),
-            secondaryCta: text('Secondary button'),
-            trustLine: text('Trust line'),
-            introVideo: video('Intro video'),
+            introCta: text('Intro button', 'Hidden while the intro video ID is empty.'),
           },
           { label: 'Hero' },
         ),
-        heroCards: fields.array(fields.object({ text: text('Text') }), { label: 'Hero cards', itemLabel: (p) => p.fields.text.value }),
-        problem: fields.object({ heading: text('Heading'), cards: titled('Cards'), closingLine: text('Closing line') }, { label: 'Problem' }),
-        outcomes: fields.object({ heading: text('Heading'), items: titled('Items') }, { label: 'Outcomes' }),
-        work: fields.object({ heading: text('Heading'), intro: longText('Intro'), filters: fields.object({ all: text('All'), wellness: text('Health & wellness'), ecommerceOps: text('E-commerce & operations') }, { label: 'Filter labels' }), otherWork: longText('Other work line') }, { label: 'Work' }),
+        panel: fields.object(
+          { label: text('Screen reader label', 'Names the image panel for assistive tech.') },
+          { label: 'Project panel' },
+        ),
+        jambo: fields.object(
+          {
+            greeting: text('Greeting'),
+            statement: longText('Statement'),
+            statementFaded: longText('Statement, faded part'),
+            chips: strings('Chips'),
+          },
+          { label: 'Jambo' },
+        ),
+        process: fields.object({ eyebrow: text('Eyebrow'), heading: text('Heading'), steps: titled('Steps') }, { label: 'Process' }),
+        work: fields.object({ eyebrow: text('Eyebrow'), heading: text('Heading') }, { label: 'Selected work' }),
         services: fields.object(
           {
+            eyebrow: text('Eyebrow'),
             heading: text('Heading'),
             items: fields.array(
               fields.object({ title: text('Title'), text: longText('Text'), priceFrom: text('Price from', 'Leave empty unless a price is confirmed.') }),
@@ -189,17 +226,26 @@ export default config({
           },
           { label: 'Services' },
         ),
-        process: fields.object({ heading: text('Heading'), steps: titled('Steps') }, { label: 'Process' }),
+        reviews: fields.object({ eyebrow: text('Eyebrow'), heading: text('Heading') }, { label: 'Reviews' }),
         about: fields.object(
-          { heading: text('Heading'), text: longText('Text'), photo: image('Photo', 'src/assets/photos'), agencyLine: text('Agency line'),
+          {
+            eyebrow: text('Eyebrow'),
+            heading: text('Heading'),
+            headingFaded: text('Heading, faded part'),
+            introVideoId: text('Intro video YouTube ID', 'Leave empty to show the poster only and hide the hero intro button.'),
+            introPoster: image('Intro video poster', 'src/assets/photos'),
+            introDuration: text('Intro duration', 'For example "1:30".'),
+            introTranscript: fields.markdoc.inline({ label: 'Intro transcript' }),
+            name: text('Name'),
+            role: text('Role'),
+            bio: longText('Bio'),
             timeline: fields.array(
-              fields.object({ role: text('Role'), where: text('Where'), when: text('When') }),
+              fields.object({ role: text('Role'), org: text('Organisation'), years: text('Years') }),
               { label: 'Timeline', itemLabel: (props) => props.fields.role.value },
             ),
           },
           { label: 'About' },
         ),
-        proof: fields.object({ heading: text('Heading') }, { label: 'Proof' }),
         finalCta: fields.object({ heading: text('Heading'), text: longText('Text'), buttonLabel: text('Button label') }, { label: 'Final call to action' }),
       },
     }),
@@ -256,12 +302,26 @@ export default config({
       label: 'Settings',
       path: 'src/content/settings',
       schema: {
+        palette: fields.select({
+          label: 'Colour palette',
+          options: [
+            { label: 'Forest', value: 'forest' },
+            { label: 'Lime', value: 'lime' },
+            { label: 'Navy', value: 'navy' },
+            { label: 'Aubergine', value: 'aubergine' },
+            { label: 'Teal', value: 'teal' },
+            { label: 'Midnight', value: 'midnight' },
+          ],
+          defaultValue: 'forest',
+        }),
         ghlCalendarEmbedUrl: text('GoHighLevel calendar embed URL'),
         ghlEmbedScriptUrl: text('GoHighLevel embed script URL', 'Optional. The script src from the calendar embed code. Loads only with the calendar.'),
         email: text('Email'),
         linkedinUrl: text('LinkedIn URL'),
         githubUrl: text('GitHub URL'),
         xUrl: text('X URL'),
+        upworkUrl: text('Upwork URL'),
+        fiverrUrl: text('Fiverr URL'),
         agencyName: text('Agency name'),
         agencyUrl: text('Agency URL'),
         siteUrl: text('Site URL'),

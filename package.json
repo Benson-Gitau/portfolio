@@ -3,10 +3,11 @@
   "type": "module",
   "version": "0.0.1",
   "engines": {
-    "node": ">=22.23.4"
+    "node": ">=24 <25"
   },
   "scripts": {
     "dev": "astro dev",
+    "dev:github": "node scripts/dev-github.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
