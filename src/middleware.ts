@@ -27,7 +27,7 @@ const notConfigured = (missing: string[]) => `<!doctype html>
 <h1>Keystatic is not configured</h1>
 <p>The editor needs these values in Cloudflare, then a redeploy:</p>
 <ul>${missing.map((name) => `<li><code>${name}</code></li>`).join('')}</ul>
-<p><code>KEYSTATIC_*</code> go under the Worker's Settings → Variables and Secrets, as secrets. <code>PUBLIC_*</code> go under Settings → Build → Variables and secrets. The public site is unaffected. See DEPLOY.md, step 5.</p>
+<p><code>KEYSTATIC_*</code> go under the Worker's Settings → Variables and Secrets, as secrets. <code>PUBLIC_*</code> are GitHub Actions variables (repo Settings → Secrets and variables → Actions → Variables). The public site is unaffected. See DEPLOY.md, step 5.</p>
 </main></body></html>`;
 
 export const onRequest = defineMiddleware(async (context, next) => {

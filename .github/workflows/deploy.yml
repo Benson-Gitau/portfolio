@@ -1,0 +1,56 @@
+# Deploys the site to Cloudflare Workers.
+# - Push to main: build, then `wrangler deploy` (production).
+# - Pull request from this repo: build, then `wrangler versions upload` with a pr-<number> alias
+#   (preview URL https://pr-<number>-benson-gitau-portfolio.<subdomain>.workers.dev). Production is untouched.
+#
+# GitHub → Settings → Secrets and variables → Actions:
+#   Secrets:   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
+#   Variables: PUBLIC_SITE_URL, PUBLIC_KEYSTATIC_GITHUB_APP_SLUG, PUBLIC_KEYSTATIC_REPO_OWNER,
+#              PUBLIC_KEYSTATIC_REPO_NAME (baked into the build; not secret)
+# Keystatic's own secrets (KEYSTATIC_*) live on the Worker in Cloudflare, never here.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    # Fork PRs get no secrets, so skip them instead of failing.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
+      PUBLIC_KEYSTATIC_GITHUB_APP_SLUG: ${{ vars.PUBLIC_KEYSTATIC_GITHUB_APP_SLUG }}
+      PUBLIC_KEYSTATIC_REPO_OWNER: ${{ vars.PUBLIC_KEYSTATIC_REPO_OWNER }}
+      PUBLIC_KEYSTATIC_REPO_NAME: ${{ vars.PUBLIC_KEYSTATIC_REPO_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Deploy to production
+        if: github.ref == 'refs/heads/main'
+        run: npx wrangler deploy --message "${{ github.sha }}"
+
+      - name: Upload preview version
+        if: github.event_name == 'pull_request'
+        run: npx wrangler versions upload --preview-alias "pr-${{ github.event.pull_request.number }}" --message "PR #${{ github.event.pull_request.number }} ${{ github.event.pull_request.head.sha }}"

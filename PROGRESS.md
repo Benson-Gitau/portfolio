@@ -21,3 +21,4 @@
     - Mobile: Performance 95, Accessibility 100, Best Practices 100, SEO 100 (LCP 2.7s, CLS 0, TBT 0ms).
     - Desktop: 100, 100, 100, 100 (LCP 0.6s).
   - Not verified: the real Cloudflare deploy, the GitHub OAuth round trip, and a commit from the live admin. These need Benson's accounts (DEPLOY.md, steps 2–7).
+- 2026-11-03: Switched deploys to GitHub Actions (Benson's choice): `.github/workflows/deploy.yml` runs build and `wrangler deploy` on push to main, plus PR preview versions. Updated DEPLOY.md.
