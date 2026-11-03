@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "dev:github": "node scripts/dev-github.mjs",
+    "dev:cloud": "node scripts/dev-cloud.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

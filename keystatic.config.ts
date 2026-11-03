@@ -37,16 +37,14 @@ const strings = (label: string) => fields.array(text('Text'), { label, itemLabel
 
 const seo = fields.object({ title: text('Page title'), description: longText('Meta description') }, { label: 'SEO' });
 
-// Production edits commit to GitHub; development edits the files on disk. `npm run dev:github`
-// sets PUBLIC_KEYSTATIC_STORAGE=github to run GitHub mode locally (needed once, to create the GitHub App).
-const repo = {
-  owner: import.meta.env.PUBLIC_KEYSTATIC_REPO_OWNER || 'Benson-Gitau',
-  name: import.meta.env.PUBLIC_KEYSTATIC_REPO_NAME || 'portfolio',
-};
-const useGitHub = import.meta.env.PROD || import.meta.env.PUBLIC_KEYSTATIC_STORAGE === 'github';
+// Production edits go through Keystatic Cloud, which commits to the GitHub repo connected to the
+// Cloud project. Development edits the files on disk. `npm run dev:cloud` sets
+// PUBLIC_KEYSTATIC_STORAGE=cloud to try Cloud mode locally.
+const useCloud = import.meta.env.PROD || import.meta.env.PUBLIC_KEYSTATIC_STORAGE === 'cloud';
 
 export default config({
-  storage: useGitHub ? { kind: 'github', repo } : { kind: 'local' },
+  storage: useCloud ? { kind: 'cloud' } : { kind: 'local' },
+  cloud: { project: 'benson-portfolio/portfolio' },
   ui: { brand: { name: 'Benson Gitau' } },
   collections: {
     projects: collection({

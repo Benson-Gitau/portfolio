@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  // Deployed by Workers Builds (Cloudflare's GitHub integration): build `npm run build`, deploy
+  // Deployed by GitHub Actions (.github/workflows/deploy.yml): build `npm run build`, deploy
   // `npx wrangler deploy`. The Astro adapter writes the final config to dist/server/wrangler.json
   // (including the static assets from dist/client), and wrangler finds it through
   // .wrangler/deploy/config.json, which the build also writes.
@@ -10,5 +10,5 @@
   // Keystatic's API routes and the adapter use Node APIs.
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true }
-  // Secrets (KEYSTATIC_*) are never written here: they live in the Cloudflare dashboard.
+  // No secrets: Keystatic Cloud handles editor login.
 }

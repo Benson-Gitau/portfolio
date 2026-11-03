@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig, envField, fontProviders } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import { loadEnv } from 'vite';
 import cloudflare from '@astrojs/cloudflare';
 import markdoc from '@astrojs/markdoc';
@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 // Keystatic's local storage needs Node, so dev runs without the Workers adapter.
 const isDev = process.argv.includes('dev');
 
-// PUBLIC_SITE_URL (a Workers Builds build variable, or .env locally) drives canonical URLs, share
+// PUBLIC_SITE_URL (a GitHub Actions variable, or .env locally) drives canonical URLs, share
 // images and the sitemap, with Keystatic's settings.siteUrl as the fallback. Neither is used until
 // it is a real https URL, so a stand-in domain never reaches search engines.
 const env = loadEnv(process.env.NODE_ENV ?? 'production', process.cwd(), '');
@@ -58,15 +58,6 @@ export default defineConfig({
       ? [sitemap({ filter: (page) => !page.includes('/keystatic') && !page.includes('/api/') && !page.includes('/404') })]
       : []),
   ],
-  // Keystatic reads its GitHub credentials at runtime through getSecret() (Worker secrets). They are
-  // optional here so a build without them passes, and /keystatic explains what is missing.
-  env: {
-    schema: {
-      KEYSTATIC_GITHUB_CLIENT_ID: envField.string({ context: 'server', access: 'secret', optional: true }),
-      KEYSTATIC_GITHUB_CLIENT_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
-      KEYSTATIC_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
-    },
-  },
   fonts: [
     {
       name: 'Geist',
