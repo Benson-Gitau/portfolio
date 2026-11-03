@@ -169,24 +169,6 @@
       opacity var(--dur-reveal) var(--ease-out),
       transform var(--dur-reveal) var(--ease-out);
   }
-  /* A tick inside a revealed row draws as the row arrives: the ledger closing line by line. */
-  [data-rv] .mark path {
-    stroke-dasharray: 1;
-  }
-  [data-rv='out'] .mark path {
-    stroke-dashoffset: 1;
-  }
-  [data-rv='in'] .mark path {
-    animation: tick-draw var(--dur-reveal) var(--ease-out) var(--rv-delay, 0ms) both;
-  }
-  @keyframes tick-draw {
-    from {
-      stroke-dashoffset: 1;
-    }
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
   @media (min-width: 768px) {
     [data-rv='out'] {
       transform: translateY(20px);
@@ -210,9 +192,27 @@
   }
 
   .h2 {
-    font-size: clamp(2rem, 4.6vw, 4rem);
-    line-height: 1.04;
-    letter-spacing: -0.03em;
+    font-size: clamp(2.125rem, 4.6vw, 4.25rem);
+    font-weight: 500;
+    line-height: 1.06;
+    letter-spacing: -0.035em;
+  }
+
+  /* Small serif section label, as in "/ Work". */
+  .kicker {
+    margin-bottom: 0.75rem;
+    font-family: var(--font-instrument);
+    font-size: 1.25rem;
+    font-style: italic;
+    line-height: 1.2;
+  }
+
+  /* The one card style: soft, lifted, generously rounded. */
+  .soft-card {
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: 0 24px 48px -28px rgb(0 0 0 / 0.35);
   }
 
   .btn {

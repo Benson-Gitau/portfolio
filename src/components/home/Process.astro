@@ -7,99 +7,97 @@ interface Props {
 const { process } = Astro.props;
 ---
 
-<section class="process" id="process">
-  <div class="section wrap">
+<section class="process section" id="process">
+  <div class="wrap head">
+    <p class="kicker">/ Process</p>
     <Heading class="h2" text={process.heading} />
-    <ol>
-      {process.steps.map((step) => (
-        <li>
+  </div>
+  <ol class="wrap">
+    {process.steps.map((step, i) => (
+      <li class="soft-card">
+        <span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+        <div>
           <h3>{step.title}</h3>
           <p>{step.text}</p>
-        </li>
-      ))}
-    </ol>
-  </div>
+        </div>
+        {i < process.steps.length - 1 && (
+          <svg class="link" viewBox="0 0 120 80" fill="none" aria-hidden="true">
+            <path d="M6 66C26 18 58 8 72 26c12 16-10 34-20 20-10-15 22-40 62-34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"></path>
+            <circle cx="6" cy="66" r="5" fill="currentColor"></circle>
+            <circle cx="114" cy="12" r="5" fill="currentColor"></circle>
+          </svg>
+        )}
+      </li>
+    ))}
+  </ol>
 </section>
 
 <style>
-  .process {
-    background: var(--surface);
+  .head {
+    display: grid;
+    justify-items: center;
+    text-align: center;
   }
   ol {
     display: grid;
-    margin-top: 3rem;
-    counter-reset: step;
+    gap: 1rem;
+    margin-top: clamp(2.5rem, 6vw, 5rem);
   }
   li {
     position: relative;
-    padding: 0 0 2rem 3rem;
-    counter-increment: step;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2.5rem;
+    padding: 1.5rem;
   }
-  /* The numbered line is real information: steps run in this order. */
-  li::before {
-    content: counter(step);
-    position: absolute;
-    left: 0;
-    top: 0;
-    display: grid;
-    place-items: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: var(--radius-pill);
-    background: var(--bg);
-    border: 2px solid var(--line-strong);
-    font-family: var(--font-geist-mono);
-    font-size: 0.875rem;
+  li:nth-child(odd) { rotate: -0.75deg; }
+  li:nth-child(even) { rotate: 0.75deg; }
+  .num {
+    font-family: var(--font-geist);
+    font-size: clamp(2.75rem, 4.6vw, 4.25rem);
     font-weight: 500;
-  }
-  li:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    left: calc(1rem - 1px);
-    top: 2rem;
-    bottom: 0;
-    width: 2px;
-    background: var(--line-strong);
-  }
-  /* The line between steps grows as each step arrives. */
-  li:not(:last-child)::after {
-    transform-origin: top;
-  }
-  li[data-rv='out']::after {
-    transform: scaleY(0);
-  }
-  li[data-rv='in']::after {
-    transition: transform var(--dur-reveal) var(--ease-out);
-    transition-delay: inherit;
+    line-height: 1;
+    letter-spacing: -0.04em;
   }
   h3 {
-    font-size: 1.375rem;
-    letter-spacing: -0.015em;
-    line-height: 2rem;
+    font-size: clamp(1.375rem, 2vw, 1.75rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
   }
   p {
-    margin-top: 0.375rem;
+    margin-top: 0.5rem;
     color: var(--text-muted);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+  .link {
+    display: none;
   }
   @media (min-width: 1024px) {
     ol {
       grid-template-columns: repeat(5, 1fr);
-      column-gap: 1.5rem;
+      gap: clamp(0.75rem, 1.4vw, 1.25rem);
+      padding-bottom: 4rem;
     }
     li {
-      padding: 3rem 0 0;
+      min-height: 22rem;
     }
-    li[data-rv='out']::after {
-      transform: scaleX(0);
+    li:nth-child(odd) { rotate: -2deg; }
+    li:nth-child(even) { rotate: 2deg; translate: 0 4rem; }
+    .link {
+      position: absolute;
+      top: 0.5rem;
+      right: -2.75rem;
+      z-index: 1;
+      display: block;
+      width: 6rem;
+      color: var(--teal-text);
+      pointer-events: none;
     }
-    li:not(:last-child)::after {
-      transform-origin: left;
-      left: 2rem;
-      right: -1.5rem;
-      top: calc(1rem - 1px);
-      bottom: auto;
-      width: auto;
-      height: 2px;
+    li:nth-child(even) .link {
+      top: auto;
+      bottom: 62%;
     }
   }
 </style>

@@ -116,3 +116,32 @@ Benson approved **Direction A, The Reconciliation, with Direction C's notificati
 | Every production build warns about placeholders left in the pages | So an unfinished value cannot ship unnoticed |
 | Orange is limited to actions and key numbers: "Client project" labels, the problem's closing line and the lead service card are now neutral | Finish review, against the approved contract |
 | Project cards without covers lost their inner panel, and the booking fallback lost its second frame | Finish review |
+
+## Redesign: reference direction (design.webp)
+
+Benson replaced "The Reconciliation" with the reference image. Colours, fonts and copy stay as specified.
+
+| Decision | Why |
+| --- | --- |
+| Centred hero with a monochrome cut-out portrait, floating cards, and the page opening under an orange wash | The reference, with orange in place of its lime |
+| The cut-out is still the intro video's poster and play button | The spec keeps the video as the hero's main visual |
+| Backdrop removed locally from the supplied photos, which replaces both files in place | Git history keeps the originals |
+| Tools strip moved under the hero, Testimonials after Process, Work and Services after that, About last | The reference's order. It departs from the spec's section order at Benson's request |
+| Reference items left out: award badge, client avatars, "100+ clients", logos, quotes, career dates | The spec forbids inventing claims, clients or reviews |
+| Orange panel previews projects as text tiles until covers exist | Placeholder for the reference's screenshot collage |
+| About timeline uses only facts from the spec's About text | Stands in for the reference's career list |
+| Section labels such as "/ The problem" and "/ The fix" are mine | The reference needs them; the spec has none |
+| 3D ledger stack and Three.js removed | The new direction has no 3D. Supersedes Phase 8 |
+| All gradients removed, including the orange wash, section glows and the portrait fade. The spec's `--glow-a` and `--glow-b` tokens stay defined but unused | Benson's request. The final call to action and case study closing use flat `--surface` instead |
+
+## Redesign: soft-wash editorial (supersedes the design.webp direction)
+
+Source: Benson's soft-wash editorial brief, 2026-11-03. Its colour tokens replace the build spec's.
+
+| Decision | Why |
+| --- | --- |
+| Dark mode and the theme toggle are removed site-wide; the Keystatic `palette` select replaces them | Benson's choice. The six palettes are light only |
+| Home Work grid: "After-Hours AI Receptionist" is the retitled med-spa-ai-receptionist and "Gym Trial-to-Member" the retitled studio-mindbody-win-back. "Med Spa Speed-to-Lead" and "Clinic No-Show Recovery" are new demo entries with [placeholder] case-study fields; in production their cards show without a link until filled in | Benson's choice. The brief names four projects but only two had content |
+| Testimonials keep `permissionToPublish` as a build gate. A name shows only when `anonymous` is false and `nameApproved` is true | Benson's choice; matches CLAUDE.md rule 6 |
+| Pull-quote captions use `--ink`, not `--muted` | `--muted` on `--panel` is 3.29:1 in midnight, below AA |
+| The uncommitted design.webp redesign was committed as a checkpoint before this work | Benson's choice, for a clean diff and easy rollback |

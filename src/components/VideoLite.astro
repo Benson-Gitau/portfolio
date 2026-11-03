@@ -17,8 +17,10 @@ interface Props {
   sizes?: string;
   /** The page already shows the title beside the player. */
   titleOutside?: boolean;
+  /** Poster is a transparent cut-out with no frame around it. */
+  cutout?: boolean;
 }
-const { video, ratio = '16 / 9', position = '50% 22%', priority = false, sizes = '(min-width: 1024px) 40vw, 100vw', titleOutside = false } = Astro.props;
+const { video, ratio = '16 / 9', position = '50% 22%', priority = false, sizes = '(min-width: 1024px) 40vw, 100vw', titleOutside = false, cutout = false } = Astro.props;
 const poster = await resolveImage(video.poster, `${video.title} poster`);
 const ready = videoReady(video);
 // In development unfinished values stay visible and marked. On the live site they are left out.
@@ -29,8 +31,8 @@ const src = ready
   : '';
 ---
 
-<figure class="video-lite" data-video-lite data-src={src} data-title={video.title}>
-  <div class="frame glass">
+<figure class:list={['video-lite', { cutout }]} data-video-lite data-src={src} data-title={video.title}>
+  <div class:list={['frame', { glass: !cutout }]}>
     <div class="poster" data-poster style={`aspect-ratio:${ratio}`}>
       {poster ? (
         <Image src={poster.src} alt={poster.alt} widths={[480, 800, 1200]} sizes={sizes} format="webp" quality={78} style={`object-position:${position}`} loading={priority ? 'eager' : 'lazy'} fetchpriority={priority ? 'high' : 'auto'} />
@@ -121,6 +123,36 @@ const src = ready
     color: #f5f7fa;
     font-family: var(--font-geist-mono);
     font-size: 0.8125rem;
+  }
+  /* Hero: the figure stands on the page. Its frame returns only once a video is playing. */
+  .cutout .frame {
+    padding: 0;
+  }
+  .cutout .poster {
+    background: transparent;
+  }
+  .cutout .poster :global(img) {
+    object-fit: contain;
+    object-position: 50% 100%;
+    filter: grayscale(1) contrast(1.05);
+    transform: none !important;
+  }
+  .cutout .poster:has(iframe) {
+    background: #0b1220;
+  }
+  .cutout .play {
+    left: 50%;
+    bottom: 12%;
+    translate: -50% 0;
+  }
+  .cutout .dur {
+    right: auto;
+    left: calc(50% + 2.75rem);
+    bottom: calc(12% + 1.25rem);
+  }
+  .cutout .transcript,
+  .cutout .status {
+    text-align: center;
   }
   .status:empty {
     display: none;

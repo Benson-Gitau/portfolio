@@ -1,7 +1,6 @@
 ---
 import BookingEmbed from '../BookingEmbed.astro';
 import Heading from '../Heading.astro';
-import LedgerStack from '../LedgerStack.astro';
 import { getSettings } from '../../lib/content';
 
 interface Props {
@@ -14,39 +13,48 @@ const settings = await getSettings();
 ---
 
 <section class="final" id="contact">
-  <div class="inner section wrap">
-    <div class="copy">
-      <Heading class="h2" text={cta.heading} />
-      <p>{cta.text}</p>
-      <LedgerStack />
-    </div>
-    <div class="booking-col">
-      <div class="calendar glass"><BookingEmbed loadOn="view" /></div>
-      {note ? (
-        <p class="note">{note}</p>
-      ) : (
-        <ul class="links">
-          <li><a class="text-link" href={`mailto:${settings.email}`}>{settings.email}</a></li>
-          <li><a class="text-link" href={settings.linkedinUrl}>LinkedIn</a></li>
-        </ul>
-      )}
-    </div>
+  <div class="inner wrap">
+    <Heading class="h2" text={cta.heading} />
+    <p class="text">{cta.text}</p>
+    <div class="calendar glass"><BookingEmbed loadOn="view" /></div>
+    {note ? (
+      <p class="note">{note}</p>
+    ) : (
+      <ul class="links">
+        <li><a class="text-link" href={`mailto:${settings.email}`}>{settings.email}</a></li>
+        <li><a class="text-link" href={settings.linkedinUrl}>LinkedIn</a></li>
+      </ul>
+    )}
   </div>
 </section>
 
 <style>
   .final {
+    margin-top: var(--space-section);
+    background: var(--surface);
   }
   .inner {
     display: grid;
-    gap: 2.5rem;
+    justify-items: center;
+    padding-block: clamp(4rem, 8vw, 7rem);
+    text-align: center;
   }
-  .booking-col {
-    min-width: 0;
+  .final :global(.h2) {
+    max-width: 22ch;
   }
-  .copy p {
+  .text {
+    max-width: 52ch;
     margin-top: 1.25rem;
+    color: var(--text);
     font-size: 1.0625rem;
+  }
+  .calendar {
+    width: min(100%, 52rem);
+    min-width: 0;
+    margin-top: 2.5rem;
+    padding: 0.5rem;
+    border-radius: var(--radius-lg);
+    text-align: left;
   }
   .note {
     margin-top: 1rem;
@@ -54,6 +62,7 @@ const settings = await getSettings();
   .links {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     column-gap: 1.25rem;
     margin-top: 1rem;
   }
@@ -62,21 +71,5 @@ const settings = await getSettings();
     align-items: center;
     min-height: 44px;
     overflow-wrap: anywhere;
-  }
-  .calendar {
-    min-width: 0;
-    padding: 0.5rem;
-    border-radius: var(--radius-lg);
-  }
-  @media (min-width: 1024px) {
-    .inner {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-      gap: clamp(3rem, 6vw, 6rem);
-      align-items: start;
-    }
-    .copy {
-      position: sticky;
-      top: 6rem;
-    }
   }
 </style>

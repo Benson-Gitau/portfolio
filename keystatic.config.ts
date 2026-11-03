@@ -191,7 +191,12 @@ export default config({
         ),
         process: fields.object({ heading: text('Heading'), steps: titled('Steps') }, { label: 'Process' }),
         about: fields.object(
-          { heading: text('Heading'), text: longText('Text'), photo: image('Photo', 'src/assets/photos'), agencyLine: text('Agency line') },
+          { heading: text('Heading'), text: longText('Text'), photo: image('Photo', 'src/assets/photos'), agencyLine: text('Agency line'),
+            timeline: fields.array(
+              fields.object({ role: text('Role'), where: text('Where'), when: text('When') }),
+              { label: 'Timeline', itemLabel: (props) => props.fields.role.value },
+            ),
+          },
           { label: 'About' },
         ),
         proof: fields.object({ heading: text('Heading') }, { label: 'Proof' }),

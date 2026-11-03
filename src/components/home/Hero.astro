@@ -1,186 +1,211 @@
 ---
 import Placeholder from '../Placeholder.astro';
-import Tick from '../Tick.astro';
 import VideoLite from '../VideoLite.astro';
+import { getToolsStrip } from '../../lib/content';
 
 interface Props {
   hero: Awaited<ReturnType<typeof import('../../lib/content').getHome>>['hero'];
   cards: { text: string }[];
 }
 const { hero, cards } = Astro.props;
+const tools = await getToolsStrip();
 const lines = hero.headlineBefore.split(/(?<=\.)\s+/);
 const lastLine = lines.pop();
 ---
 
 <section class="hero wrap" id="top">
-  <div class="copy">
-    <p class="eyebrow">{hero.eyebrow}</p>
-    <h1>
-      {lines.map((line) => (
-        <span class="row"><span>{line}</span><Tick class="tick" /></span>
-      ))}
-      <span class="row"><span>{lastLine} <span class="accent-word">{hero.accentWord}</span>{hero.headlineAfter}</span><Tick class="tick" /></span>
-    </h1>
-    <p class="sub">{hero.subline}</p>
-    <div class="cta">
-      <a class="btn btn-primary" href="#contact" data-book>{hero.primaryCta}</a>
-      <a class="btn btn-secondary" href="#work">{hero.secondaryCta}</a>
+  <p class="badge glass">{hero.eyebrow}</p>
+  <h1>
+    {lines.map((line) => <span class="line">{line}</span>)}
+    <span class="line">{lastLine} <span class="accent-word">{hero.accentWord}</span>{hero.headlineAfter}</span>
+  </h1>
+
+  <div class="stage">
+    <div class="side left">
+      <ul class="notes">
+        {cards.map((card, i) => (
+          <li class="note glass" style={`--i:${i}`}>
+            <span class="mono-label">Demo</span>
+            <span><Placeholder text={card.text} /></span>
+          </li>
+        ))}
+      </ul>
+      <p class="trust">{hero.trustLine}</p>
     </div>
-    <p class="trust">{hero.trustLine}</p>
+    <div class="figure">
+      <VideoLite video={hero.introVideo} ratio="1 / 1" priority cutout sizes="(min-width: 1024px) 40vw, 100vw" />
+    </div>
+    <div class="side right">
+      <p class="sub">{hero.subline}</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#contact" data-book>{hero.primaryCta}</a>
+        <a class="btn btn-secondary" href="#work">{hero.secondaryCta}</a>
+      </div>
+    </div>
   </div>
-  <div class="video">
-    <VideoLite video={hero.introVideo} ratio="4 / 4.2" priority sizes="(min-width: 1024px) 36vw, 100vw" />
-    <ul class="notes">
-      {cards.map((card, i) => (
-        <li class="note glass" style={`--i:${i}`}><span class="mono-label">Demo</span><span><Placeholder text={card.text} /></span></li>
-      ))}
-    </ul>
-  </div>
+</section>
+
+<section class="tools wrap" aria-label="Tools">
+  <ul>{tools.map((tool) => <li>{tool.name}</li>)}</ul>
 </section>
 
 <style>
   .hero {
     display: grid;
-    gap: 1.25rem;
-    padding-top: 0.5rem;
-    padding-bottom: 2rem;
+    justify-items: center;
+    padding-top: clamp(0.5rem, 2vw, 1.5rem);
+    text-align: center;
   }
-  /* Phones: headline, action, then the video, all on the first screen. */
-  .copy {
-    display: contents;
-  }
-  .eyebrow { order: 1; }
-  h1 { order: 2; }
-  .cta { order: 3; }
-  .video { order: 4; }
-  .sub { order: 5; }
-  .trust { order: 6; }
-  .eyebrow {
-    color: var(--text-muted);
-    font-size: 0.9375rem;
-    margin-bottom: -0.5rem;
+  .badge {
+    max-width: 100%;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-pill);
+    box-shadow: none;
+    font-size: 0.875rem;
+    line-height: 1.3;
   }
   h1 {
-    display: block;
-    font-size: clamp(2rem, 9.2vw, 5.25rem);
-    line-height: 1;
-    letter-spacing: -0.035em;
+    position: relative;
+    z-index: 1;
+    margin-top: 1.25rem;
+    font-size: clamp(2.375rem, 11vw, 5.75rem);
+    font-weight: 500;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
     text-wrap: initial;
   }
-  /* Each sentence of the headline is a ledger row, ruled and ticked off. */
-  .row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding-block: 0.16em;
-    border-bottom: 1px solid var(--rule);
-  }
-  .row > span:first-child {
+  .line {
+    display: block;
     text-wrap: balance;
-  }
-  .row:first-child {
-    border-top: 1px solid var(--rule);
   }
   h1 .accent-word {
     color: var(--accent-text);
-    font-size: 1.08em;
-    line-height: 0.9;
+    font-size: 1.22em;
+    line-height: 0.8;
   }
-  .row :global(.tick) {
-    width: 0.55em;
-    height: 0.55em;
-    color: var(--teal-text);
+  .stage {
+    display: grid;
+    gap: 1.25rem;
+    width: 100%;
+    margin-top: 1.25rem;
   }
-  .row :global(.tick path) {
-    stroke-dasharray: 1;
-    animation: draw var(--dur-reveal) var(--ease-out) both;
+  /* Phones: headline, actions, video, then the rest. */
+  .side {
+    display: contents;
   }
-  .row:nth-child(1) :global(.tick path) { animation-delay: 300ms; }
-  .row:nth-child(2) :global(.tick path) { animation-delay: 560ms; }
-  .row:nth-child(3) :global(.tick path) { animation-delay: 820ms; }
-  @keyframes draw {
-    from { stroke-dashoffset: 1; }
-    to { stroke-dashoffset: 0; }
+  .cta { order: 1; }
+  .figure { order: 2; }
+  .sub { order: 3; margin-inline: auto; }
+  .notes { order: 4; margin-inline: auto; }
+  .trust { order: 5; margin-inline: auto; }
+  .sub {
+    max-width: 44ch;
   }
   .cta {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.75rem;
   }
-  .sub {
-    max-width: 60ch;
-  }
   .trust {
-    color: var(--text-muted);
+    max-width: 34ch;
     font-size: 0.875rem;
-    max-width: none;
   }
-  .video {
-    position: relative;
+  .figure {
     min-width: 0;
+    width: min(100%, 30rem);
+    margin-inline: auto;
   }
   .notes {
     display: grid;
-    gap: 0.5rem;
-    margin-top: 0.25rem;
+    gap: 0.625rem;
+    width: min(100%, 22rem);
   }
   .note {
     display: flex;
     flex-direction: column;
     gap: 0.125rem;
-    padding: 0.75rem 1rem;
+    padding: 0.625rem 1.125rem;
     border-radius: var(--radius-md);
+    background: var(--glass-fallback);
     font-family: var(--font-geist);
+    font-size: 0.9375rem;
     font-weight: 500;
     line-height: 1.3;
-    /* Near-solid: these sit over the photo and must hold AA on any part of it. */
-    background: color-mix(in srgb, var(--glass-fallback) 94%, transparent);
+    text-align: left;
     animation: arrive var(--dur-reveal) var(--ease-out) both;
-    animation-delay: calc(900ms + var(--i) * 260ms);
+    animation-delay: calc(500ms + var(--i) * 220ms);
   }
   .note .mono-label {
     color: var(--teal-text);
   }
   @keyframes arrive {
-    from { opacity: 0; transform: translateY(16px) scale(0.97); }
+    from { opacity: 0; transform: translateY(14px) scale(0.97); }
     to { opacity: 1; transform: none; }
+  }
+  .tools {
+    padding-block: 1.75rem;
+  }
+  .tools ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-geist);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
   }
   @media (min-width: 1024px) {
     .hero {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
-      column-gap: clamp(2rem, 4vw, 4rem);
-      padding-top: 1rem;
+      padding-bottom: 0;
     }
-    .copy { display: block; }
-    h1 { font-size: clamp(3rem, 4.75vw, 5.5rem); }
-    .eyebrow { margin-bottom: 1rem; }
-    .sub { margin-top: 1.25rem; }
-    .cta { margin-top: 1.5rem; }
-    .trust { margin-top: 1.25rem; }
-  }
-  /* Cards float beside the face only where there is room to clear it. */
-  @media (min-width: 1280px) {
+    h1 {
+      font-size: clamp(3.25rem, 5vw, 6rem);
+    }
+    .stage {
+      /* The figure is sized to the window, so the play button stays on the first screen. */
+      grid-template-columns: minmax(0, 1fr) min(36rem, 58svh) minmax(0, 1fr);
+      align-items: stretch;
+      gap: clamp(1rem, 2vw, 2rem);
+      margin-top: -1rem;
+    }
+    .side {
+      display: grid;
+      gap: 1.25rem;
+      text-align: left;
+    }
+    .cta, .figure, .sub, .notes, .trust {
+      order: 0;
+      margin-inline: 0;
+    }
+    .left {
+      justify-items: start;
+      align-content: space-between;
+      padding-top: 2.5rem;
+      padding-bottom: 1rem;
+    }
+    .right {
+      justify-items: end;
+      align-content: end;
+      padding-bottom: 1rem;
+    }
     .notes {
-      position: absolute;
-      left: -2.5rem;
-      top: 2.5rem;
-      width: 10.5rem;
-      margin: 0;
+      width: min(100%, 17rem);
     }
-    .note {
-      padding: 0.625rem 0.75rem;
-      font-size: 0.9375rem;
+    .note:nth-child(1) { rotate: -2deg; }
+    .note:nth-child(2) { rotate: 1.5deg; margin-left: 1.25rem; }
+    .note:nth-child(3) { rotate: -1deg; }
+    .sub {
+      max-width: 32ch;
     }
-  }
-  @media (min-width: 1440px) {
-    .notes {
-      top: 3rem;
-      width: 12rem;
+    .cta {
+      justify-content: flex-start;
+      width: min(100%, 32ch);
     }
-    .note {
-      padding: 0.75rem 1rem;
-      font-size: 1rem;
+    .figure {
+      width: 100%;
     }
   }
 </style>

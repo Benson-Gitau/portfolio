@@ -5,6 +5,7 @@ import Hero from '../components/home/Hero.astro';
 import Leaks from '../components/home/Leaks.astro';
 import Process from '../components/home/Process.astro';
 import Services from '../components/home/Services.astro';
+import Showcase from '../components/home/Showcase.astro';
 import WorkGrid from '../components/home/WorkGrid.astro';
 import Testimonials from '../components/Testimonials.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
@@ -36,11 +37,12 @@ const structuredData = {
 <SiteLayout title={home.seo.title} description={home.seo.description}>
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(structuredData).replaceAll('<', '\\u003c')} />
   <Hero hero={home.hero} cards={home.heroCards} />
+  <Showcase />
   <Leaks problem={home.problem} outcomes={home.outcomes} />
+  <Process process={home.process} />
+  <Testimonials heading={home.proof.heading} items={testimonials} />
   <WorkGrid work={home.work} />
   <Services services={home.services} />
-  <Process process={home.process} />
   <About about={home.about} />
-  <Testimonials heading={home.proof.heading} items={testimonials} />
   <FinalCta cta={home.finalCta} />
 </SiteLayout>

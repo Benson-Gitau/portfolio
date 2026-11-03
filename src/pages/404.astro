@@ -19,12 +19,16 @@ const { notFound } = await getSettings();
 
 <style>
   .missing {
+    display: grid;
+    justify-items: center;
     padding-block: clamp(4rem, 14vw, 11rem);
+    text-align: center;
   }
   .missing :global(h1) {
     font-size: clamp(2.5rem, 7vw, 6.25rem);
+    font-weight: 500;
     line-height: 1;
-    letter-spacing: -0.035em;
+    letter-spacing: -0.04em;
   }
   .missing :global(h1 .accent-word) {
     color: var(--accent-text);
@@ -36,6 +40,7 @@ const { notFound } = await getSettings();
   .actions {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.75rem;
     margin-top: 2rem;
   }

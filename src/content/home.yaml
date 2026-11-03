@@ -125,6 +125,13 @@ about:
     image: /src/assets/photos/about/photo/image.png
     alt: Benson Gitau smiling, in a dark suit and glasses
   agencyLine: My client work runs through [AGENCY NAME] →
+  timeline:
+    - role: Automation and AI systems
+      where: Businesses in the US, UK and Kenya
+      when: Since 2024
+    - role: Operations
+      where: Equity Bank
+      when: Five years
 proof:
   heading: From the people I've *built* for
 finalCta:

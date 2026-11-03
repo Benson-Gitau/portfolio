@@ -105,15 +105,17 @@ const hasMedia = Boolean(demoVideo) || project.gallery.length > 0;
 </SiteLayout>
 
 <style>
-  .head {
+.head {
+    display: grid;
+    justify-items: center;
     padding-top: 1.5rem;
     padding-bottom: clamp(3rem, 6vw, 5rem);
+    text-align: center;
   }
   .back {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    color: var(--text-muted);
     font-size: 0.9375rem;
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -121,6 +123,7 @@ const hasMedia = Boolean(demoVideo) || project.gallery.length > 0;
   .meta {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.25rem 1rem;
     margin-top: 1rem;
     max-width: none;
@@ -128,19 +131,20 @@ const hasMedia = Boolean(demoVideo) || project.gallery.length > 0;
   .demo {
     color: var(--teal-text);
   }
+  .industry,
   .client {
-    color: var(--text-muted);
+    color: var(--text);
   }
   .industry {
-    color: var(--text-muted);
     font-size: 0.875rem;
   }
   .head :global(h1) {
     margin-top: 1rem;
-    max-width: 22ch;
+    max-width: 20ch;
     font-size: clamp(2.25rem, 6vw, 5.25rem);
-    line-height: 1.02;
-    letter-spacing: -0.035em;
+    font-weight: 500;
+    line-height: 1.04;
+    letter-spacing: -0.04em;
   }
   .head :global(h1 .accent-word) {
     color: var(--accent-text);
@@ -148,15 +152,19 @@ const hasMedia = Boolean(demoVideo) || project.gallery.length > 0;
   }
   .summary {
     margin-top: 1.5rem;
-    max-width: 60ch;
+    max-width: 56ch;
     font-size: 1.125rem;
   }
   .label {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.625rem;
-    font-size: 1.125rem;
-    letter-spacing: -0.01em;
+    font-family: var(--font-instrument);
+    font-size: 1.375rem;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0;
   }
   .label :global(.open) {
     width: 1.5rem;
@@ -164,26 +172,31 @@ const hasMedia = Boolean(demoVideo) || project.gallery.length > 0;
     color: var(--danger);
   }
   .statement {
-    max-width: 34ch;
+    margin-inline: auto;
+    max-width: 28ch;
     font-family: var(--font-geist);
     font-size: clamp(1.5rem, 3.2vw, 2.75rem);
     font-weight: 500;
-    line-height: 1.18;
-    letter-spacing: -0.025em;
+    line-height: 1.16;
+    letter-spacing: -0.03em;
+    text-align: center;
   }
   .problem {
     display: grid;
     gap: 1.25rem;
-    border-top: 1px solid var(--rule);
     padding-block: clamp(3rem, 7vw, 6rem);
   }
   .system {
     display: grid;
-    gap: 2rem;
+    gap: 2.5rem;
+    max-width: 56rem;
     padding-top: 0;
   }
+  .system .h2 {
+    text-align: center;
+  }
   .designed {
-    background: var(--surface);
+    text-align: center;
   }
   .designed .h2 {
     margin-top: 0.75rem;
@@ -208,10 +221,12 @@ const hasMedia = Boolean(demoVideo) || project.gallery.length > 0;
   }
   .tools {
     padding-block: 2.5rem;
+    text-align: center;
   }
   .tools ul {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.5rem;
     margin-top: 1rem;
   }
@@ -219,12 +234,15 @@ const hasMedia = Boolean(demoVideo) || project.gallery.length > 0;
     display: grid;
     gap: clamp(3rem, 6vw, 5rem);
     padding-top: 2.5rem;
+    text-align: center;
   }
   .video-label {
     margin-block: 0.5rem 1.5rem;
   }
   .video-wrap {
     max-width: 56rem;
+    margin-inline: auto;
+    text-align: left;
   }
   .media .h2 + .gallery {
     margin-top: 2rem;
@@ -240,7 +258,7 @@ const hasMedia = Boolean(demoVideo) || project.gallery.length > 0;
     display: block;
     width: 100%;
     height: auto;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
   }
   figcaption {
     margin-top: 0.5rem;
@@ -249,40 +267,24 @@ const hasMedia = Boolean(demoVideo) || project.gallery.length > 0;
   }
   .closing {
     display: grid;
-    justify-items: start;
+    justify-items: center;
     gap: 2rem;
-    border-top: 1px solid var(--rule);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-section);
+    text-align: center;
   }
   .cta {
-    max-width: 26ch;
+    max-width: 24ch;
     font-family: var(--font-geist);
     font-size: clamp(1.75rem, 4.6vw, 4rem);
-    font-weight: 600;
+    font-weight: 500;
     line-height: 1.06;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.035em;
   }
   @media (min-width: 768px) {
     .gallery {
       grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @media (min-width: 1024px) {
-    .problem,
-    .system {
-      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-      gap: clamp(2rem, 4vw, 4rem);
-      align-items: start;
-    }
-    .sticky {
-      position: sticky;
-      top: 6rem;
-    }
-    .label {
-      margin-top: 0.5rem;
-    }
-    .closing {
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: end;
     }
   }
 </style>

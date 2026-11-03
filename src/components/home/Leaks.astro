@@ -1,118 +1,168 @@
 ---
-// Problem and Outcomes: the same ledger, first open, then closed.
+// Problem and Outcomes: a centred statement, then the same issues closed.
 import Heading from '../Heading.astro';
 import Tick from '../Tick.astro';
+import { getProjects } from '../../lib/content';
 
 interface Props {
   problem: { heading: string; cards: readonly { title: string; text: string }[]; closingLine: string };
   outcomes: { heading: string; items: readonly { title: string; text: string }[] };
 }
 const { problem, outcomes } = Astro.props;
+const [first, second = ''] = problem.heading.split(/(?<=\.)\s+/);
+const secondParts = second.split(/\*([^*]+)\*/);
+const industries = [...new Set((await getProjects()).map((project) => project.industry))].slice(0, 6);
 ---
 
 <section class="problem section wrap">
-  <Heading class="h2 lead" text={problem.heading} />
-  <div class="rows">
-    <ul>
-      {problem.cards.map((card) => (
-        <li>
-          <Tick open class="open" />
-          <div>
-            <h3>{card.title}</h3>
-            <p>{card.text}</p>
-          </div>
-        </li>
-      ))}
-    </ul>
-    <p class="closing">{problem.closingLine}</p>
+  <div class="statement-area">
+    <div class="tags" aria-hidden="true">
+      {industries.map((industry) => <span class="tag">{industry}</span>)}
+    </div>
+    <p class="kicker">/ The problem</p>
+    <h2 class="statement">
+      {first} <span class="fade">{secondParts.map((part, i) => (i % 2 ? <span class="accent-word">{part}</span> : part))}</span>
+    </h2>
   </div>
+  <ul class="cards">
+    {problem.cards.map((card) => (
+      <li class="soft-card">
+        <Tick open class="open" />
+        <h3>{card.title}</h3>
+        <p>{card.text}</p>
+      </li>
+    ))}
+  </ul>
+  <p class="closing">{problem.closingLine}</p>
 </section>
 
-<section class="outcomes">
-  <div class="section wrap">
-    <Heading class="h2" text={outcomes.heading} />
-    <ul>
-      {outcomes.items.map((item) => (
-        <li>
-          <Tick class="done" />
-          <h3>{item.title}</h3>
-          <p>{item.text}</p>
-        </li>
-      ))}
-    </ul>
-  </div>
+<section class="outcomes section wrap">
+  <p class="kicker">/ The fix</p>
+  <Heading class="h2" text={outcomes.heading} />
+  <ul class="cards">
+    {outcomes.items.map((item) => (
+      <li class="soft-card">
+        <Tick class="done" />
+        <h3>{item.title}</h3>
+        <p>{item.text}</p>
+      </li>
+    ))}
+  </ul>
 </section>
 
 <style>
-  .problem {
+  .problem,
+  .outcomes {
     display: grid;
-    gap: 2.5rem;
+    justify-items: center;
+    text-align: center;
   }
-  ul {
+  .outcomes {
+    padding-top: 0;
+  }
+  .statement-area {
+    position: relative;
     display: grid;
+    justify-items: center;
+    width: 100%;
   }
-  .rows li {
+  .statement {
+    max-width: 22ch;
+    font-size: clamp(1.875rem, 4.4vw, 4rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+  .fade {
+    color: var(--text-muted);
+  }
+  .tags {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .tag {
+    padding: 0.375rem 0.875rem;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    box-shadow: var(--shadow-soft);
+    font-family: var(--font-geist);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .tag::before {
+    content: '';
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-right: 0.5rem;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .tag:nth-child(even)::before {
+    background: var(--teal);
+  }
+  .cards {
+    display: grid;
     gap: 1rem;
-    padding-block: 1.5rem;
-    border-bottom: 1px solid var(--rule);
+    width: 100%;
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    text-align: left;
   }
-  .rows li:first-child {
-    border-top: 1px solid var(--rule);
+  .cards li {
+    padding: clamp(1.25rem, 2.2vw, 2rem);
   }
-  .rows :global(.open) {
+  .cards :global(.open),
+  .cards :global(.done) {
     width: 1.75rem;
     height: 1.75rem;
-    margin-top: 0.125rem;
+    margin-bottom: 1.25rem;
+  }
+  .cards :global(.open) {
     color: var(--danger);
   }
+  .cards :global(.done) {
+    color: var(--teal-text);
+  }
   h3 {
-    font-size: clamp(1.25rem, 2vw, 1.625rem);
-    letter-spacing: -0.015em;
+    font-size: clamp(1.25rem, 1.9vw, 1.625rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
   }
   li p {
-    margin-top: 0.5rem;
+    margin-top: 0.625rem;
     color: var(--text-muted);
   }
   .closing {
-    margin-top: 2rem;
+    margin-top: 2.5rem;
     font-family: var(--font-geist);
-    font-size: clamp(1.375rem, 2.6vw, 2.125rem);
+    font-size: clamp(1.25rem, 2.2vw, 1.875rem);
     font-weight: 500;
     line-height: 1.2;
     letter-spacing: -0.02em;
-    color: var(--text);
   }
-  .outcomes {
-    background: var(--surface);
-  }
-  .outcomes ul {
-    gap: 2.5rem;
-    margin-top: 3rem;
-  }
-  .outcomes li {
-    padding-top: 1.25rem;
-    border-top: 2px solid var(--line-strong);
-  }
-  .outcomes :global(.done) {
-    width: 2rem;
-    height: 2rem;
-    margin-bottom: 1rem;
-    color: var(--teal-text);
-  }
-  @media (min-width: 1024px) {
-    .problem {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      gap: clamp(3rem, 6vw, 6rem);
-      align-items: start;
-    }
-    .lead {
-      position: sticky;
-      top: 6rem;
-    }
-    .outcomes ul {
+  @media (min-width: 768px) {
+    .cards {
       grid-template-columns: repeat(3, 1fr);
-      gap: clamp(2rem, 4vw, 4rem);
     }
+  }
+  /* Tags float either side of the statement only where there is room for them. */
+  @media (min-width: 1200px) {
+    .tags {
+      display: contents;
+    }
+    .tag {
+      position: absolute;
+      white-space: nowrap;
+    }
+    .tag:nth-child(1) { left: 3%; top: 12%; rotate: -5deg; }
+    .tag:nth-child(2) { left: 8%; top: 48%; rotate: 4deg; }
+    .tag:nth-child(3) { left: 2%; top: 82%; rotate: -3deg; }
+    .tag:nth-child(4) { right: 3%; top: 10%; rotate: 5deg; }
+    .tag:nth-child(5) { right: 8%; top: 46%; rotate: -4deg; }
+    .tag:nth-child(6) { right: 2%; top: 80%; rotate: 3deg; }
   }
 </style>

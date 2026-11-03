@@ -28,53 +28,59 @@ const { heading, results, note } = Astro.props;
 )}
 
 <style>
-  .results {
-    background: var(--surface);
+  .results > :global(.section) {
+    padding-top: 0;
+  }
+  .results :global(.h2) {
+    text-align: center;
   }
   dl {
+    display: grid;
+    gap: 1rem;
     margin-top: 2.5rem;
-    border-top: 1px solid var(--rule);
   }
   .row {
     display: grid;
-    gap: 0.5rem;
-    padding-block: 1.5rem;
-    border-bottom: 1px solid var(--rule);
+    gap: 0.75rem;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
   }
   .value {
     order: -1;
     color: var(--accent-text);
     font-family: var(--font-geist-mono);
-    font-size: clamp(3rem, 8vw, 7.5rem);
+    font-size: clamp(2.75rem, 6vw, 5.5rem);
     font-weight: 500;
     line-height: 1;
     letter-spacing: -0.04em;
   }
   dt {
     font-family: var(--font-geist);
-    font-size: clamp(1.125rem, 2vw, 1.625rem);
+    font-size: clamp(1.125rem, 1.8vw, 1.5rem);
     font-weight: 500;
     line-height: 1.25;
   }
   .note {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.75rem;
-    margin-top: 1.5rem;
+    margin: 1.5rem auto 0;
     font-family: var(--font-geist);
     font-size: 1.125rem;
     font-weight: 500;
   }
   .note :global(.t) {
+    flex: none;
     width: 1.5rem;
     height: 1.5rem;
     color: var(--teal-text);
   }
   @media (min-width: 768px) {
-    .row {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-      align-items: end;
-      gap: 2rem;
+    dl {
+      grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
     }
   }
 </style>

@@ -11,61 +11,65 @@ const agencyLinked = !hasPlaceholder(settings.agencyUrl) && Boolean(settings.age
 const year = new Date().getFullYear();
 ---
 
-<footer class="footer wrap">
-  <div class="id">
-    <p class="name">Benson Gitau</p>
-    <p>{settings.footerRole}</p>
-    <p>{settings.footerLocation}</p>
-    <p>© {year}</p>
+<footer class="footer">
+  <div class="top wrap">
+    {!minimal && <nav aria-label="Footer">
+      <a href="/#work">Work</a>
+      <a href="/#services">Services</a>
+      {agencyLinked ? <a href={settings.agencyUrl}>{settings.agencyName}</a> : <span><Placeholder text={settings.agencyName} /></span>}
+      <a href={settings.linkedinUrl}>LinkedIn</a>
+      <a href={settings.githubUrl}>GitHub</a>
+      <a href={settings.xUrl}>X</a>
+    </nav>}
+    <p class="meta">{settings.footerRole}<br />{settings.footerLocation}<br />© {year}</p>
   </div>
-  {!minimal && <nav aria-label="Footer">
-    <a href="/#work">Work</a>
-    <a href="/#services">Services</a>
-    {agencyLinked ? <a href={settings.agencyUrl}>{settings.agencyName}</a> : <span><Placeholder text={settings.agencyName} /></span>}
-    <a href={settings.linkedinUrl}>LinkedIn</a>
-    <a href={settings.githubUrl}>GitHub</a>
-    <a href={settings.xUrl}>X</a>
-  </nav>}
+  <p class="wordmark">Benson Gitau</p>
 </footer>
 
 <style>
   .footer {
-    display: grid;
-    gap: 2rem;
-    padding-block: 2.5rem;
-    border-top: 1px solid var(--rule);
-    color: var(--text-muted);
+    overflow: hidden;
+    padding-top: 2rem;
     font-size: 0.9375rem;
   }
-  .name {
-    color: var(--text);
-    font-family: var(--font-geist);
-    font-weight: 600;
-    font-size: 1.125rem;
+  .top {
+    display: grid;
+    gap: 1.25rem;
   }
   nav {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    column-gap: 0.25rem;
+    column-gap: 1.25rem;
   }
   nav a,
   nav span {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    padding-inline: 0.5rem;
-    color: var(--text);
   }
-  nav a {
-    text-decoration: underline;
-    text-decoration-color: var(--rule);
-    text-underline-offset: 4px;
+  .meta {
+    color: var(--text-muted);
+  }
+  .wordmark {
+    max-width: none;
+    margin-top: 1.5rem;
+    font-family: var(--font-instrument);
+    font-size: 21.5vw;
+    font-style: italic;
+    line-height: 0.82;
+    letter-spacing: -0.03em;
+    text-align: center;
+    white-space: nowrap;
+    padding-bottom: 0.08em;
   }
   @media (min-width: 768px) {
-    .footer {
+    .top {
       grid-template-columns: 1fr auto;
-      align-items: end;
+      align-items: start;
+    }
+    .meta {
+      text-align: right;
     }
   }
 </style>
