@@ -1,6 +1,6 @@
 # Deploying the portfolio
 
-The site deploys to **Cloudflare Workers** from **GitHub Actions** (`.github/workflows/deploy.yml`). Pushing to `main` builds and deploys production. A pull request gets its own preview URL, `https://pr-<number>-benson-gitau-portfolio.<subdomain>.workers.dev`, and production is untouched. The workflow logs in to Cloudflare with an API token and account ID stored as GitHub secrets.
+The site deploys to **Cloudflare Workers** using **Workers Builds**, Cloudflare's own GitHub integration. Pushing to `main` builds and deploys production. Other branches and pull requests get preview URLs, and production is untouched. There are no GitHub Actions, no API tokens and no GitHub secrets.
 
 > Why Workers and not Pages: the Astro Cloudflare adapter this site uses (v14, for Astro 7) no longer supports Pages.
 
@@ -25,26 +25,27 @@ git push origin main
 
 The repo is `Benson-Gitau/portfolio`.
 
-## 2. GitHub secrets and variables for the workflow
+## 2. Create the Worker from the repo
 
-GitHub → repo **Settings** → **Secrets and variables** → **Actions**.
+Cloudflare dashboard → **Workers & Pages** → **Create** → **Import a repository** → authorise Cloudflare on GitHub if asked → pick **Benson-Gitau/portfolio**.
 
-**Secrets** tab → **New repository secret**:
+On the configure screen:
 
-| Name | Value |
+| Setting | Value |
 | --- | --- |
-| `CLOUDFLARE_API_TOKEN` | A Cloudflare API token made from the **Edit Cloudflare Workers** template (Cloudflare → My Profile → API Tokens → Create Token) |
-| `CLOUDFLARE_ACCOUNT_ID` | Your account ID (Cloudflare → Workers & Pages → right-hand sidebar) |
+| Project name | `benson-gitau-portfolio` (must match `name` in `wrangler.jsonc`) |
+| Build command | `npm run build` |
+| Deploy command | `npx wrangler deploy` |
+| Non-production branch deploy command | `npx wrangler versions upload` |
+| Root directory | `/` (leave empty) |
+| Production branch | `main` |
+| Builds for non-production branches | enabled |
 
-The workflow expects exactly these names. If yours are named differently, rename them or tell me and I'll change the workflow.
+Under **Advanced settings → Build variables**, add `NODE_VERSION` = `24`. This matches `.nvmrc`, which Cloudflare also reads. `PUBLIC_SITE_URL` is optional: `settings.siteUrl` already gives `https://bensongitau.dev`. If you add it, it must be exactly that.
 
-**Variables** tab (optional): `PUBLIC_SITE_URL` = `https://bensongitau.dev`. The workflow and `settings.siteUrl` already default to it, so you only need this to override it.
+Select **Save and Deploy**. The first build creates the Worker and takes a few minutes. Watch it under Worker → **Deployments** → **View build**.
 
-To deploy: push to `main`, or go to the **Actions** tab → **Deploy** → **Run workflow**. The first deploy creates the `benson-gitau-portfolio` Worker.
-
-Find the live URL in Cloudflare → **Workers & Pages** → **benson-gitau-portfolio**, or in the deploy step's log.
-
-Don't also connect the repo through Cloudflare's own Git integration (Workers Builds), or every push will deploy twice.
+Find the live URL in Cloudflare → **Workers & Pages** → **benson-gitau-portfolio**. To redeploy without a new commit: Worker → **Deployments** → latest build → **Retry build**.
 
 ## 3. Connect Keystatic Cloud to the repo
 
@@ -58,7 +59,10 @@ The code already points at the Cloud project `benson-portfolio/portfolio` (`keys
 
 Optional, to test before deploying: stop any running `npm run dev`, run `npm run dev:cloud`, open `http://127.0.0.1:4321/keystatic` and log in. Saving here commits to GitHub too. Go back to everyday editing with `npm run dev`.
 
-**If you set up the old GitHub mode earlier**, clean it up: delete the `KEYSTATIC_GITHUB_CLIENT_ID`, `KEYSTATIC_GITHUB_CLIENT_SECRET` and `KEYSTATIC_SECRET` secrets on the Worker (Settings → Variables and Secrets), the `PUBLIC_KEYSTATIC_*` GitHub Actions variables, the same lines in your local `.env`, and the old Keystatic GitHub App (GitHub → Settings → Developer settings → GitHub Apps). None of them are read any more.
+**If you set up the old GitHub mode or GitHub Actions earlier**, clean it up. None of these are read any more:
+- The `KEYSTATIC_GITHUB_CLIENT_ID`, `KEYSTATIC_GITHUB_CLIENT_SECRET` and `KEYSTATIC_SECRET` secrets on the Worker (Settings → Variables and Secrets), and the same lines in your local `.env`.
+- The old Keystatic GitHub App (GitHub → Settings → Developer settings → GitHub Apps).
+- The GitHub repo's Actions secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, and any Actions variables (repo Settings → Secrets and variables → Actions). Then delete that API token in Cloudflare (My Profile → API Tokens).
 
 ## 4. Add the custom domain
 
@@ -72,7 +76,7 @@ Production domain: `bensongitau.dev` (apex), with `www.bensongitau.dev` redirect
    - Then: target URL `https://bensongitau.dev/${1}`, status code **301**, **Preserve query string** on.
    - **Deploy**. The rule runs before the Worker, so `www` traffic never reaches it.
 4. **TLS.** In the zone → **SSL/TLS** → **Overview**: set the encryption mode to **Full (strict)**. Then **SSL/TLS** → **Edge Certificates**: turn on **Always Use HTTPS**.
-5. **Check the build URL.** `PUBLIC_SITE_URL` and `settings.siteUrl` are already `https://bensongitau.dev`. If you set the GitHub variable (step 2), it must be exactly that: https, apex, no trailing slash. Run the **Deploy** workflow after any change.
+5. **Check the build URL.** `settings.siteUrl` is already `https://bensongitau.dev`. If you set a `PUBLIC_SITE_URL` build variable (step 2), it must be exactly that: https, apex, no trailing slash. Retry the build after any change.
 
 Log in to the editor at `https://bensongitau.dev/keystatic`, not on `www` (it redirects) or on PR preview URLs.
 
@@ -91,7 +95,7 @@ Verify:
 2. Open `https://bensongitau.dev/keystatic` → log in with Keystatic Cloud.
 3. Open **Testimonials** → any entry → change one character → **Save**.
 4. On GitHub, a new commit appears on `main`.
-5. On GitHub → **Actions**, a **Deploy** run starts for that commit and goes green. Reload the site to see the change.
+5. In Cloudflare → Worker → **Deployments**, a build starts for that commit and succeeds. Reload the site to see the change.
 6. Undo the test edit the same way.
 
 ## 6. Troubleshooting
@@ -103,10 +107,11 @@ Verify:
 | `www.bensongitau.dev` doesn't redirect | The Redirect Rule is missing or not deployed, or `www` has no proxied (orange-cloud) DNS record. Adding `www` as a Worker custom domain creates one (step 4.2–4.3). |
 | Keystatic login says you don't have access to the project | Your Keystatic Cloud account isn't in the `benson-portfolio` team, or the project name in `keystatic.config.ts` doesn't match the one in Keystatic Cloud (step 3). |
 | Saving in Keystatic fails, or it can't find the repo | The repo isn't connected to the Cloud project, the Keystatic Cloud GitHub app isn't installed on `Benson-Gitau/portfolio`, or your GitHub account lacks write access (step 3). |
-| Deploy run fails with **Authentication error [code: 10000]** or asks for an account | `CLOUDFLARE_API_TOKEN` is missing, expired or lacks Workers edit permission, or `CLOUDFLARE_ACCOUNT_ID` is wrong (step 2). |
-| Every push deploys twice | The repo is also connected through Cloudflare's Git integration. Disconnect it: Worker → Settings → Builds → Disconnect. |
+| Build fails at `npm ci` with **"Missing: … from lock file"** | `package-lock.json` was written by an older npm. Regenerate it with a current npm (`npm install -g npm@latest`, then `npm install`) and commit it. |
+| A build seems stuck for more than 10 minutes | Open the build log (Deployments → View build) to see the step. Cancel and **Retry build**. |
+| Deploy fails because the Worker name doesn't match | The Worker's name in Cloudflare must equal `name` in `wrangler.jsonc` (`benson-gitau-portfolio`). |
 | Logs show `No such module "node:…"` or another Node API error | `nodejs_compat` is missing. It's set in `wrangler.jsonc` under `compatibility_flags`. Don't remove it. |
-| `/keystatic` returns **404** | The route was prerendered or the Worker isn't running. Check the build log shows `adapter: @astrojs/cloudflare`, and that the Actions log shows `npx wrangler deploy` uploading a Worker, not only assets. |
+| `/keystatic` returns **404** | The route was prerendered or the Worker isn't running. Check the build log shows `adapter: @astrojs/cloudflare`, and that the deploy step shows `npx wrangler deploy` uploading a Worker, not only assets. |
 | Build fails at `npm ci` or with an engines error | The Node version comes from `.nvmrc` (24). Keep it in step with `engines` in `package.json`. |
 | The calendar or a video doesn't load on the live site | The Content Security Policy in `public/_headers` blocks its domain. If GoHighLevel uses a white-label domain, add it to `script-src` and `frame-src`. |
 

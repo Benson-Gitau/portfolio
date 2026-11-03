@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 // Keystatic's local storage needs Node, so dev runs without the Workers adapter.
 const isDev = process.argv.includes('dev');
 
-// PUBLIC_SITE_URL (a GitHub Actions variable, or .env locally) drives canonical URLs, share
+// PUBLIC_SITE_URL (a Workers Builds build variable, or .env locally) drives canonical URLs, share
 // images and the sitemap, with Keystatic's settings.siteUrl as the fallback. Neither is used until
 // it is a real https URL, so a stand-in domain never reaches search engines.
 const env = loadEnv(process.env.NODE_ENV ?? 'production', process.cwd(), '');

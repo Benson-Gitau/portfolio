@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  // Deployed by GitHub Actions (.github/workflows/deploy.yml): build `npm run build`, deploy
+  // Deployed by Workers Builds (Cloudflare's GitHub integration): build `npm run build`, deploy
   // `npx wrangler deploy`. The Astro adapter writes the final config to dist/server/wrangler.json
   // (including the static assets from dist/client), and wrangler finds it through
   // .wrangler/deploy/config.json, which the build also writes.

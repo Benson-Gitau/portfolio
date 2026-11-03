@@ -32,3 +32,9 @@ pnpm-debug.log*
 .playwright-mcp/
 .taste-skill/
 .impeccable/review/
+.DECISIONS.md
+.DEPLOY.md
+.DESIGN.md
+.Portfolio Build Spec.md
+.PROGRESS.md
+.TODO.md
