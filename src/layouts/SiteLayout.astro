@@ -24,6 +24,21 @@ const { title, description, minimal = false, noindex = false, shareImage } = Ast
   <BookingModal />
 </BaseLayout>
 
+<style>
+  /* Top wash behind the header and hero; bottom wash behind the closing call to action
+     and the footer. Body backgrounds, so neither starts or stops on a visible edge. */
+  :global(body) {
+    background-color: var(--page);
+    background-image: var(--wash-top), var(--wash-bottom);
+    background-repeat: no-repeat;
+    background-position: top center, top center, bottom center;
+    background-size:
+      100% min(1100px, 125vh),
+      100% min(1100px, 125vh),
+      100% 1000px;
+  }
+</style>
+
 <script>
   import '../lib/reveal';
 </script>

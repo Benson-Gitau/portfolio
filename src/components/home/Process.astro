@@ -1,103 +1,207 @@
 ---
-import Heading from '../Heading.astro';
-
-interface Props {
-  process: { heading: string; steps: readonly { title: string; text: string }[] };
-}
-const { process } = Astro.props;
+import SectionHead from '../SectionHead.astro';
+import { getHome } from '../../lib/content';
+const { process } = await getHome();
+// Tilt and drop per card, from the brief.
+const poses = [
+  { tilt: -3, drop: 40 },
+  { tilt: 2, drop: 0 },
+  { tilt: -2, drop: 60 },
+];
 ---
 
-<section class="process section" id="process">
-  <div class="wrap head">
-    <p class="kicker">/ Process</p>
-    <Heading class="h2" text={process.heading} />
+<section class="process" id="process" aria-labelledby="process-title">
+  <div class="wrap section">
+    <SectionHead eyebrow={process.eyebrow} heading={process.heading} id="process-title" />
+
+    <div class="stage" data-process>
+      <svg class="path" viewBox="0 0 1200 560" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <mask id="process-draw" maskUnits="userSpaceOnUse">
+            <path class="draw" pathLength="1" d="M -10 70 C 180 -10, 360 30, 404 210 S 470 530, 600 520 S 760 440, 798 290 S 900 20, 1210 90" />
+          </mask>
+        </defs>
+        <path class="dash" mask="url(#process-draw)" d="M -10 70 C 180 -10, 360 30, 404 210 S 470 530, 600 520 S 760 440, 798 290 S 900 20, 1210 90" />
+      </svg>
+      <span class="marker" aria-hidden="true"></span>
+
+      <ol class="cards">
+        {process.steps.map((step, i) => (
+          <li class="card" style={`--t:${poses[i]?.tilt ?? 0}deg; --drop:${poses[i]?.drop ?? 0}px`} data-reveal>
+            <span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
   </div>
-  <ol class="wrap">
-    {process.steps.map((step, i) => (
-      <li class="soft-card">
-        <span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-        <div>
-          <h3>{step.title}</h3>
-          <p>{step.text}</p>
-        </div>
-        {i < process.steps.length - 1 && (
-          <svg class="link" viewBox="0 0 120 80" fill="none" aria-hidden="true">
-            <path d="M6 66C26 18 58 8 72 26c12 16-10 34-20 20-10-15 22-40 62-34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"></path>
-            <circle cx="6" cy="66" r="5" fill="currentColor"></circle>
-            <circle cx="114" cy="12" r="5" fill="currentColor"></circle>
-          </svg>
-        )}
-      </li>
-    ))}
-  </ol>
 </section>
 
 <style>
-  .head {
-    display: grid;
-    justify-items: center;
-    text-align: center;
-  }
-  ol {
-    display: grid;
-    gap: 1rem;
-    margin-top: clamp(2.5rem, 6vw, 5rem);
-  }
-  li {
+  .process {
     position: relative;
+    isolation: isolate;
+  }
+  /* Middle wash. Its top edge is masked so it melts into the page instead of starting on a line. */
+  .process::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--wash-mid);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 9rem);
+    mask-image: linear-gradient(to bottom, transparent, #000 9rem);
+  }
+
+  .stage {
+    position: relative;
+    margin-top: 3rem;
+    padding-block: 3rem 3.5rem;
+  }
+
+  .path {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .dash {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    stroke-dasharray: 6 8;
+    vector-effect: non-scaling-stroke;
+  }
+  .draw {
+    fill: none;
+    stroke: #fff; /* mask luminance, not a visible colour */
+    stroke-width: 24;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    vector-effect: non-scaling-stroke;
+  }
+  .marker {
+    position: absolute;
+    left: 50%;
+    top: calc(520 / 560 * 100%);
+    width: 14px;
+    height: 14px;
+    border: 3px solid var(--card);
+    border-radius: 50%;
+    background: var(--dot);
+    box-shadow: var(--shadow-chip);
+    translate: -50% -50%;
+  }
+
+  .cards {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
+  }
+  .card {
+    --tilt: var(--t);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 2.5rem;
-    padding: 1.5rem;
+    min-height: 300px;
+    padding: 1.75rem;
+    border-radius: 22px;
+    background: var(--card);
+    box-shadow: var(--shadow-soft);
+    translate: 0 var(--drop);
+    rotate: var(--tilt);
+    transition: rotate 900ms var(--ease-out);
   }
-  li:nth-child(odd) { rotate: -0.75deg; }
-  li:nth-child(even) { rotate: 0.75deg; }
   .num {
     font-family: var(--font-geist);
-    font-size: clamp(2.75rem, 4.6vw, 4.25rem);
-    font-weight: 500;
+    font-size: 3.5rem;
+    font-weight: 300;
     line-height: 1;
     letter-spacing: -0.04em;
   }
   h3 {
-    font-size: clamp(1.375rem, 2vw, 1.75rem);
+    font-size: 1.625rem;
     font-weight: 500;
     letter-spacing: -0.02em;
   }
-  p {
-    margin-top: 0.5rem;
-    color: var(--text-muted);
+  .card p {
+    margin-top: 0.625rem;
+    color: var(--muted);
     font-size: 0.9375rem;
-    line-height: 1.5;
   }
-  .link {
-    display: none;
+
+  /* Motion: once in view, the cards ease halfway toward straight and the path draws in. */
+  @media (prefers-reduced-motion: no-preference) {
+    .stage[data-armed]:not([data-seen]) .draw {
+      stroke-dashoffset: 1;
+    }
+    .stage[data-armed]:not([data-seen]) .marker {
+      opacity: 0;
+      scale: 0.4;
+    }
+    .draw {
+      transition: stroke-dashoffset 1600ms cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    .marker {
+      transition:
+        opacity 300ms var(--ease-out) 700ms,
+        scale 500ms var(--ease-out) 700ms;
+    }
   }
-  @media (min-width: 1024px) {
-    ol {
-      grid-template-columns: repeat(5, 1fr);
-      gap: clamp(0.75rem, 1.4vw, 1.25rem);
-      padding-bottom: 4rem;
+  @media (prefers-reduced-motion: no-preference) and (min-width: 760px) {
+    .stage[data-seen] .card {
+      rotate: calc(var(--tilt) * 0.5);
     }
-    li {
-      min-height: 22rem;
+  }
+
+  @media (max-width: 759px) {
+    .stage {
+      margin-top: 2rem;
+      padding-block: 0;
     }
-    li:nth-child(odd) { rotate: -2deg; }
-    li:nth-child(even) { rotate: 2deg; translate: 0 4rem; }
-    .link {
-      position: absolute;
-      top: 0.5rem;
-      right: -2.75rem;
-      z-index: 1;
-      display: block;
-      width: 6rem;
-      color: var(--teal-text);
-      pointer-events: none;
+    .path,
+    .marker {
+      display: none;
     }
-    li:nth-child(even) .link {
-      top: auto;
-      bottom: 62%;
+    .cards {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+    .card {
+      min-height: 0;
+      translate: none;
+    }
+    .card:nth-child(odd) {
+      --tilt: -1.5deg;
+    }
+    .card:nth-child(even) {
+      --tilt: 1.5deg;
     }
   }
 </style>
+
+<script>
+  const stage = document.querySelector<HTMLElement>('[data-process]');
+  if (stage && 'IntersectionObserver' in window) {
+    stage.dataset.armed = '';
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        stage.dataset.seen = '';
+        io.disconnect();
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(stage);
+  } else if (stage) {
+    stage.dataset.seen = '';
+  }
+</script>

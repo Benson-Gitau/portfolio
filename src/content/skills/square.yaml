@@ -1,5 +1,5 @@
 name: Square
 category: E-commerce
 icon: null
-showInToolsStrip: true
-order: 9
+showInToolsStrip: false
+order: 10

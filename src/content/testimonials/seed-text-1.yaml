@@ -1,0 +1,18 @@
+personName: '[SEED] Text review'
+type:
+  discriminant: text
+  value:
+    quote: '[SEED] Placeholder review text for layout only. Real reviews replace this before launch; production never shows seed entries.'
+    pullQuote: false
+role: '[SEED] Practice manager'
+practiceType: '[SEED] Clinic'
+source: upwork
+anonymous: true
+nameApproved: false
+photo:
+  image: null
+  alt: ''
+project: null
+permissionToPublish: true
+featured: true
+order: 2

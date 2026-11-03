@@ -1,0 +1,22 @@
+personName: '[SEED] Video review'
+type:
+  discriminant: video
+  value:
+    videoId: '[SEED_VIDEO_ID]'
+    poster:
+      image: null
+      alt: ''
+    duration: '0:45'
+    orientation: portrait
+role: '[SEED] Owner'
+practiceType: '[SEED] Med spa'
+source: direct
+anonymous: true
+nameApproved: false
+photo:
+  image: null
+  alt: ''
+project: null
+permissionToPublish: true
+featured: true
+order: 1

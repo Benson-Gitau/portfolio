@@ -1,142 +1,113 @@
 seo:
-  title: Benson Gitau — Automation for Wellness Businesses
+  title: Benson Gitau — Automation Consultant for Wellness Businesses
   description: >-
     Automation and AI voice systems that answer every call, follow up every lead
     and fill the calendar for med spas, clinics, gyms and coaches.
 hero:
-  eyebrow: Automation & AI systems for health, fitness and wellness
-  headlineBefore: Every call answered. Every lead followed up. Every slot
-  accentWord: booked
-  headlineAfter: .
-  subline: >-
-    I build the systems that stop revenue leaking between the first inquiry and
-    the booked appointment, for med spas, clinics, gyms, studios and coaches, on
-    GoHighLevel, n8n, Mindbody and AI voice agents.
+  greeting: Hi, I'm Benson
+  title: Automation Consultant
+  heroPortrait:
+    image: /src/assets/photos/hero/heroPortrait/image.png
+    alt: Benson Gitau smiling, in a dark suit and glasses
+  available: Available for new projects
+  audience: Building for clinics, studios and coaches in the US & UK
+  statement: >-
+    Every call answered. Every lead followed up. Every slot booked. I build the
+    systems that make that true for your practice.
   primaryCta: Book a 20-minute call
-  secondaryCta: See the systems →
-  trustLine: >-
-    Built for businesses in the US, UK and Kenya · 5 years in bank operations
-    before automation
-  introVideo:
-    youtubeId: '[INTRO_VIDEO_YOUTUBE_ID]'
-    title: 60-second intro
-    poster:
-      image: /src/assets/photos/hero/introVideo/poster/image.png
-      alt: Benson Gitau smiling, in a dark suit and glasses
-    transcript: '[INTRO_VIDEO_TRANSCRIPT]'
-    durationLabel: 60s
-heroCards:
-  - text: Missed call → texted back in seconds
-  - text: Consultation booked · Thu 2:30pm
-  - text: Reminder sent
-problem:
-  heading: >-
-    Most wellness businesses don't have a lead problem. They have a *follow-up*
-    problem.
-  cards:
-    - title: Calls go to voicemail.
-      text: >-
-        During treatments, classes and after hours, the caller doesn't leave a
-        message. They book somewhere else.
-    - title: Leads go cold.
-      text: >-
-        Ad and website leads wait hours for a reply, long after they've stopped
-        looking.
-    - title: The front desk retypes everything.
-      text: >-
-        Bookings, payments and forms live in tools that don't talk, so your team
-        copies data instead of looking after clients.
-  closingLine: Each one is revenue you've already paid to attract.
-outcomes:
-  heading: What it looks like when it's *fixed*
-  items:
-    - title: Every inquiry gets a fast response.
-      text: >-
-        Calls answered, missed calls texted back and new leads contacted within
-        minutes, day or night.
-    - title: Fewer empty slots.
-      text: Reminders, no-show follow-up and rebooking run automatically.
-    - title: Admin that runs itself.
-      text: >-
-        Your booking platform, CRM and payments share data, so your team stops
-        retyping it.
-work:
-  heading: Systems I've *built*
-  intro: >-
-    Three demo builds for wellness businesses, and real results from e-commerce
-    and operations clients. Demo builds are labelled.
-  filters:
-    all: All
-    wellness: Health & wellness
-    ecommerceOps: E-commerce & operations
-  otherWork: >-
-    Also built: StoreLink, a multi-platform inventory sync for Shopify, Square
-    and Etsy · a remote-jobs platform for the Kenyan market · a real estate
-    marketing website · a natural foods Shopify store.
-services:
-  heading: Ways I can *help*
-  items:
-    - title: AI receptionist
-      text: >-
-        Answers every call, books consultations and hands clinical questions to
-        your team.
-    - title: Missed-call text-back and no-show recovery
-      text: Wins back missed calls and empty slots automatically.
-    - title: Speed-to-lead
-      text: Calls or texts every ad lead within a minute and books them.
-    - title: GoHighLevel setup for wellness businesses
-      text: Calendars, pipeline, forms and core automations, set up properly.
-    - title: Mindbody and booking integrations
-      text: Mindbody, Vagaro and Boulevard connected to your CRM with n8n or Zapier.
-    - title: Landing pages and funnels
-      text: Treatment and offer pages that turn ad clicks into booked consultations.
-    - title: E-commerce automation
-      text: Orders, inventory, CRM and reporting for Shopify and Square stores.
+  introCta: Watch intro
+panel:
+  label: Screens from the demo builds
+jambo:
+  greeting: Jambo!
+  statement: >-
+    My focus is closing the gap between the first inquiry and the booked
+    appointment,
+  statementFaded: with systems that keep working after your front desk goes home.
+  chips:
+    - AI receptionists
+    - Speed-to-lead
+    - GoHighLevel setup
+    - No-show recovery
+    - Mindbody automations
+    - n8n & Zapier workflows
 process:
-  heading: How a project *runs*
+  eyebrow: / How a project runs
+  heading: Here's how it works
   steps:
     - title: Audit
       text: >-
-        A 20-minute call and a map of where leads and bookings slip through
-        today.
-    - title: Plan
+        A 20-minute call to find where leads stall: phones, forms, booking,
+        follow-up.
+    - title: Build
       text: >-
-        A short system plan with scope, tools and price, approved before I
-        build.
-    - title: Build and test
-      text: Built in your own accounts and tested end to end with real scenarios.
-    - title: Handover
-      text: Walkthrough video and written docs, so your team can run it.
-    - title: Support
-      text: Optional monthly monitoring and improvements.
+        A flow map you approve, then the build inside your own GHL, Mindbody
+        and n8n accounts.
+    - title: Hand over
+      text: >-
+        Tested with real scenarios, then Loom walkthroughs, a runbook and
+        support while it beds in.
+work:
+  eyebrow: / Demo builds
+  heading: Selected Work
+services:
+  eyebrow: / Services
+  heading: Ways I can help
+  items:
+    - title: AI receptionist
+      text: Answers every call, books consultations and hands clinical questions to your team.
+      priceFrom: ''
+    - title: Missed-call text-back and no-show recovery
+      text: Wins back missed calls and empty slots automatically.
+      priceFrom: ''
+    - title: Speed-to-lead
+      text: Calls or texts every ad lead within a minute and books them.
+      priceFrom: ''
+    - title: GoHighLevel setup for wellness businesses
+      text: Calendars, pipeline, forms and core automations, set up properly.
+      priceFrom: ''
+    - title: Mindbody and booking integrations
+      text: Mindbody, Vagaro and Boulevard connected to your CRM with n8n or Zapier.
+      priceFrom: ''
+    - title: Landing pages and funnels
+      text: Treatment and offer pages that turn ad clicks into booked consultations.
+      priceFrom: ''
+    - title: E-commerce automation
+      text: Orders, inventory, CRM and reporting for Shopify and Square stores.
+      priceFrom: ''
+reviews:
+  eyebrow: / Client words
+  heading: What clients say
 about:
-  heading: Systems that fit how your business *actually* runs
-  text: >-
-    Before automation, I spent five years in operations at Equity Bank, where I
-    learned that most problems are process problems first and tool problems
-    second. I start every project the same way: map how leads, bookings and
-    payments really move through your business, find where they leak, then build
-    the simplest system that closes the gap. Since 2024 I've built automation,
-    integration and AI systems for businesses in the US, UK and Kenya, on
-    GoHighLevel, n8n, Zapier and AI voice agents. I'm based in Nairobi, work
-    remotely, and hand over everything in your accounts, documented, so you're
-    never dependent on me.
-  photo:
-    image: /src/assets/photos/about/photo/image.png
+  eyebrow: / Who I am
+  heading: Operations first,
+  headingFaded: automation second
+  introVideoId: '[INTRO_VIDEO_YOUTUBE_ID]'
+  introPoster:
+    image: /src/assets/photos/about/introPoster/image.png
     alt: Benson Gitau smiling, in a dark suit and glasses
-  agencyLine: My client work runs through [AGENCY NAME] →
+  introDuration: '1:30'
+  introTranscript: '[INTRO_VIDEO_TRANSCRIPT]'
+  name: Benson Gitau
+  role: Automation consultant
+  bio: >-
+    Five years running operations at a bank taught me where processes leak. Now
+    I build automations for med spas, clinics, gyms and coaches, in their own
+    accounts, so they own everything when we're done. Based in Nairobi, working
+    US and UK hours.
   timeline:
-    - role: Automation and AI systems
-      where: Businesses in the US, UK and Kenya
-      when: Since 2024
+    - role: Founder, automation & web
+      org: Codevant Solutions
+      years: 2024 → Now
+    - role: Freelance automation & web
+      org: Upwork · Fiverr
+      years: 2024 → 2025
     - role: Operations
-      where: Equity Bank
-      when: Five years
-proof:
-  heading: From the people I've *built* for
+      org: Equity Bank Kenya
+      years: '[Years]'
 finalCta:
-  heading: Tell me where bookings *slip through*. I'll show you the system I'd build.
+  heading: Let's get your bookings back
   text: >-
-    A 20-minute call, no pitch deck. You leave with a clear picture of what to
-    fix first, whether or not we work together.
+    20 minutes, no pitch deck. You'll leave with the two or three fixes that
+    matter most.
   buttonLabel: Book a 20-minute call

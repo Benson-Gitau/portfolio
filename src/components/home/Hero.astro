@@ -1,211 +1,233 @@
 ---
+import { Image } from 'astro:assets';
 import Placeholder from '../Placeholder.astro';
-import VideoLite from '../VideoLite.astro';
-import { getToolsStrip } from '../../lib/content';
+import { getHome, introVideoReady, resolveImage } from '../../lib/content';
 
-interface Props {
-  hero: Awaited<ReturnType<typeof import('../../lib/content').getHome>>['hero'];
-  cards: { text: string }[];
-}
-const { hero, cards } = Astro.props;
-const tools = await getToolsStrip();
-const lines = hero.headlineBefore.split(/(?<=\.)\s+/);
-const lastLine = lines.pop();
+const home = await getHome();
+const { hero } = home;
+const portrait = await resolveImage(hero.heroPortrait, 'hero portrait');
+// The intro lives in About. In development an unfinished video still shows its button.
+const showIntro = introVideoReady(home.about.introVideoId) || import.meta.env.DEV;
 ---
 
-<section class="hero wrap" id="top">
-  <p class="badge glass">{hero.eyebrow}</p>
-  <h1>
-    {lines.map((line) => <span class="line">{line}</span>)}
-    <span class="line">{lastLine} <span class="accent-word">{hero.accentWord}</span>{hero.headlineAfter}</span>
+<section class="hero wrap" id="top" aria-labelledby="hero-title">
+  <h1 class="title" id="hero-title">
+    <span class="l1">{hero.greeting}</span>
+    <span class="l2 serif">{hero.title}</span>
   </h1>
 
-  <div class="stage">
+  <div class="row">
     <div class="side left">
-      <ul class="notes">
-        {cards.map((card, i) => (
-          <li class="note glass" style={`--i:${i}`}>
-            <span class="mono-label">Demo</span>
-            <span><Placeholder text={card.text} /></span>
-          </li>
-        ))}
-      </ul>
-      <p class="trust">{hero.trustLine}</p>
+      <p class="pill available"><span class="status-dot" aria-hidden="true"></span>{hero.available}</p>
+      <p class="audience">{hero.audience}</p>
     </div>
-    <div class="figure">
-      <VideoLite video={hero.introVideo} ratio="1 / 1" priority cutout sizes="(min-width: 1024px) 40vw, 100vw" />
+
+    <div class="portrait">
+      {portrait ? (
+        <Image
+          src={portrait.src}
+          alt={portrait.alt}
+          widths={[320, 420, 640, 840]}
+          sizes="(min-width: 760px) 420px, 280px"
+          format="webp"
+          quality={82}
+          loading="eager"
+          fetchpriority="high"
+        />
+      ) : (
+        <div class="portrait-missing mono-label"><Placeholder text="[HERO_PORTRAIT]" /></div>
+      )}
     </div>
+
     <div class="side right">
-      <p class="sub">{hero.subline}</p>
-      <div class="cta">
-        <a class="btn btn-primary" href="#contact" data-book>{hero.primaryCta}</a>
-        <a class="btn btn-secondary" href="#work">{hero.secondaryCta}</a>
+      <p class="statement">{hero.statement}</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#book" data-book>{hero.primaryCta}</a>
+        {showIntro && (
+          <a class="btn btn-secondary" href="#about">
+            <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M4 2.6v10.8a.8.8 0 0 0 1.2.7l8.6-5.4a.8.8 0 0 0 0-1.4L5.2 1.9A.8.8 0 0 0 4 2.6Z"></path></svg>
+            {hero.introCta}
+          </a>
+        )}
       </div>
     </div>
   </div>
 </section>
 
-<section class="tools wrap" aria-label="Tools">
-  <ul>{tools.map((tool) => <li>{tool.name}</li>)}</ul>
-</section>
-
 <style>
   .hero {
-    display: grid;
-    justify-items: center;
-    padding-top: clamp(0.5rem, 2vw, 1.5rem);
+    padding-top: clamp(1.5rem, 4vw, 3.5rem);
     text-align: center;
   }
-  .badge {
-    max-width: 100%;
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-pill);
-    box-shadow: none;
-    font-size: 0.875rem;
-    line-height: 1.3;
-  }
-  h1 {
+
+  .title {
     position: relative;
-    z-index: 1;
-    margin-top: 1.25rem;
-    font-size: clamp(2.375rem, 11vw, 5.75rem);
-    font-weight: 500;
-    line-height: 1.02;
-    letter-spacing: -0.04em;
-    text-wrap: initial;
-  }
-  .line {
-    display: block;
+    z-index: 2;
+    display: grid;
+    justify-items: center;
+    font-weight: 400;
     text-wrap: balance;
   }
-  h1 .accent-word {
-    color: var(--accent-text);
-    font-size: 1.22em;
-    line-height: 0.8;
+  .l1 {
+    font-size: clamp(2.75rem, 6vw, 5.25rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
   }
-  .stage {
+  .l2 {
+    font-size: clamp(3.5rem, 9vw, 8.25rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+
+  .row {
     display: grid;
-    gap: 1.25rem;
-    width: 100%;
-    margin-top: 1.25rem;
+    grid-template-columns: 1fr minmax(0, 420px) 1fr;
+    align-items: end;
+    gap: 2rem;
   }
-  /* Phones: headline, actions, video, then the rest. */
+
   .side {
-    display: contents;
-  }
-  .cta { order: 1; }
-  .figure { order: 2; }
-  .sub { order: 3; margin-inline: auto; }
-  .notes { order: 4; margin-inline: auto; }
-  .trust { order: 5; margin-inline: auto; }
-  .sub {
-    max-width: 44ch;
-  }
-  .cta {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.75rem;
-  }
-  .trust {
-    max-width: 34ch;
-    font-size: 0.875rem;
-  }
-  .figure {
-    min-width: 0;
-    width: min(100%, 30rem);
-    margin-inline: auto;
-  }
-  .notes {
-    display: grid;
-    gap: 0.625rem;
-    width: min(100%, 22rem);
-  }
-  .note {
     display: flex;
     flex-direction: column;
-    gap: 0.125rem;
-    padding: 0.625rem 1.125rem;
-    border-radius: var(--radius-md);
-    background: var(--glass-fallback);
-    font-family: var(--font-geist);
-    font-size: 0.9375rem;
-    font-weight: 500;
-    line-height: 1.3;
+    padding-bottom: 2.5rem;
     text-align: left;
-    animation: arrive var(--dur-reveal) var(--ease-out) both;
-    animation-delay: calc(500ms + var(--i) * 220ms);
   }
-  .note .mono-label {
-    color: var(--teal-text);
+  .left {
+    align-items: flex-start;
   }
-  @keyframes arrive {
-    from { opacity: 0; transform: translateY(14px) scale(0.97); }
-    to { opacity: 1; transform: none; }
+  .right {
+    align-items: flex-start;
+    justify-self: end;
   }
-  .tools {
-    padding-block: 1.75rem;
+  .right .statement {
+    max-width: 300px;
   }
-  .tools ul {
+
+  .available {
+    font-size: 0.9375rem;
+  }
+  .status-dot {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--status);
+  }
+  .status-dot::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--status);
+    animation: pulse 2.4s var(--ease-out) infinite;
+  }
+  @keyframes pulse {
+    from {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(2.6);
+    }
+  }
+
+  .audience {
+    max-width: 22ch;
+    margin-top: 7.5rem;
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  .statement {
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+  .actions {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem 1.75rem;
-    color: var(--text-muted);
-    font-family: var(--font-geist);
-    font-size: 1rem;
-    font-weight: 500;
-    letter-spacing: -0.01em;
+    gap: 0.625rem;
+    margin-top: 1.5rem;
   }
-  @media (min-width: 1024px) {
-    .hero {
-      padding-bottom: 0;
+
+  .portrait {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    margin-top: clamp(-5rem, -5vw, -2.5rem);
+    aspect-ratio: 4 / 5;
+    animation: portrait-in 900ms var(--ease-out) both;
+  }
+  .portrait :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 100%;
+  }
+  .portrait-missing {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    background: var(--soft);
+  }
+  @keyframes portrait-in {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
     }
-    h1 {
-      font-size: clamp(3.25rem, 5vw, 6rem);
-    }
-    .stage {
-      /* The figure is sized to the window, so the play button stays on the first screen. */
-      grid-template-columns: minmax(0, 1fr) min(36rem, 58svh) minmax(0, 1fr);
-      align-items: stretch;
-      gap: clamp(1rem, 2vw, 2rem);
-      margin-top: -1rem;
-    }
-    .side {
-      display: grid;
-      gap: 1.25rem;
-      text-align: left;
-    }
-    .cta, .figure, .sub, .notes, .trust {
-      order: 0;
-      margin-inline: 0;
+  }
+
+  @media (max-width: 959px) {
+    .row {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      gap: 0;
     }
     .left {
-      justify-items: start;
-      align-content: space-between;
-      padding-top: 2.5rem;
-      padding-bottom: 1rem;
+      display: contents;
+    }
+    .portrait {
+      grid-row: 1;
+      grid-column: 1;
+      width: 280px;
+      margin-top: 1rem;
+    }
+    /* The pill floats over the portrait's left edge. */
+    .available {
+      grid-row: 1;
+      grid-column: 1;
+      z-index: 2;
+      justify-self: start;
+      align-self: end;
+      margin-bottom: 22%;
+      margin-left: max(0px, calc(50% - 172px));
+      font-size: 0.875rem;
     }
     .right {
-      justify-items: end;
-      align-content: end;
-      padding-bottom: 1rem;
+      justify-self: stretch;
+      max-width: 34rem;
+      margin-inline: auto;
+      padding: 2rem 0 0;
+      text-align: center;
+      align-items: stretch;
     }
-    .notes {
-      width: min(100%, 17rem);
+    .statement {
+      margin-inline: auto;
     }
-    .note:nth-child(1) { rotate: -2deg; }
-    .note:nth-child(2) { rotate: 1.5deg; margin-left: 1.25rem; }
-    .note:nth-child(3) { rotate: -1deg; }
-    .sub {
-      max-width: 32ch;
+    .actions {
+      flex-direction: column;
     }
-    .cta {
-      justify-content: flex-start;
-      width: min(100%, 32ch);
-    }
-    .figure {
+    .actions .btn {
       width: 100%;
+    }
+    .audience {
+      grid-row: 3;
+      max-width: none;
+      margin: 1.5rem 0 2rem;
+      text-align: center;
     }
   }
 </style>

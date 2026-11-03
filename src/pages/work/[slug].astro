@@ -12,7 +12,7 @@ import { getHome, getProjects, getProjectTestimonials, getSettings, videoReady }
 
 export async function getStaticPaths() {
   const projects = await getProjects();
-  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+  return projects.filter((project) => project.hasPage).map((project) => ({ params: { slug: project.slug }, props: { project } }));
 }
 
 const { project } = Astro.props as { project: Awaited<ReturnType<typeof getProjects>>[number] };
@@ -95,7 +95,7 @@ const hasMedia = Boolean(demoVideo) || project.gallery.length > 0;
       </div>
     )}
 
-    <Testimonials heading={home.proof.heading} items={testimonials} />
+    <Testimonials eyebrow={home.reviews.eyebrow} heading={home.reviews.heading} items={testimonials} />
 
     <section class="closing section wrap">
       <p class="cta">{project.cta}</p>
@@ -184,7 +184,7 @@ const hasMedia = Boolean(demoVideo) || project.gallery.length > 0;
   .problem {
     display: grid;
     gap: 1.25rem;
-    padding-block: clamp(3rem, 7vw, 6rem);
+    padding-block: clamp(2.5rem, 5vw, 4.5rem);
   }
   .system {
     display: grid;

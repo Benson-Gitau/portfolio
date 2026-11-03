@@ -1,20 +1,17 @@
 ---
-import Heading from '../Heading.astro';
-
-interface Props {
-  services: { heading: string; items: readonly { title: string; text: string; priceFrom: string }[] };
-}
-const { services } = Astro.props;
+// An editorial ruled list rather than cards: the page already has card rows in
+// Process and Work, and services read best as a scannable menu.
+import SectionHead from '../SectionHead.astro';
+import { getHome } from '../../lib/content';
+const { services } = await getHome();
 ---
 
-<section class="services section wrap" id="services">
-  <div class="head">
-    <p class="kicker">/ Services</p>
-    <Heading class="h2" text={services.heading} />
-  </div>
-  <ul class="bento">
+<section class="services wrap section" id="services" aria-labelledby="services-title">
+  <SectionHead eyebrow={services.eyebrow} heading={services.heading} id="services-title" />
+
+  <ul class="list">
     {services.items.map((item) => (
-      <li class="cell soft-card">
+      <li class="row" data-reveal>
         <h3>{item.title}</h3>
         <p>{item.text}</p>
         {item.priceFrom && <p class="price">From {item.priceFrom}</p>}
@@ -24,56 +21,45 @@ const { services } = Astro.props;
 </section>
 
 <style>
-  .head {
-    display: grid;
-    justify-items: center;
-    text-align: center;
+  .list {
+    max-width: 1040px;
+    margin: 3.5rem auto 0;
+    border-bottom: 1px solid var(--line);
   }
-  .bento {
+  .row {
     display: grid;
-    gap: 1rem;
-    margin-top: clamp(2.5rem, 5vw, 4rem);
-  }
-  .cell {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    padding: clamp(1.25rem, 2.2vw, 2rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) auto;
+    gap: 0.5rem 2.5rem;
+    align-items: baseline;
+    padding-block: 1.5rem;
+    border-top: 1px solid var(--line);
   }
   h3 {
-    font-size: clamp(1.25rem, 1.9vw, 1.625rem);
+    font-size: 1.25rem;
     font-weight: 500;
+    line-height: 1.25;
     letter-spacing: -0.02em;
   }
-  .cell p {
-    color: var(--text-muted);
+  .row p {
+    color: var(--muted);
+    font-size: 0.9375rem;
+    line-height: 1.55;
   }
-  .price {
-    margin-top: auto;
-    font-family: var(--font-geist-mono);
+  .row .price {
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
-  .cell:first-child {
-    justify-content: flex-end;
-    border-color: transparent;
-    background: var(--accent);
-    color: var(--on-accent);
-  }
-  .cell:first-child h3 {
-    font-size: clamp(2rem, 4vw, 3.75rem);
-    letter-spacing: -0.035em;
-    line-height: 1;
-  }
-  .cell:first-child p {
-    color: var(--on-accent);
-    font-size: 1.0625rem;
-  }
-  @media (min-width: 768px) {
-    .bento {
-      grid-template-columns: repeat(6, 1fr);
+  @media (max-width: 759px) {
+    .list {
+      margin-top: 2.5rem;
     }
-    .cell { grid-column: span 2; min-height: 14rem; }
-    .cell:nth-child(1) { grid-column: span 4; }
-    .cell:nth-child(6),
-    .cell:nth-child(7) { grid-column: span 3; }
+    .row {
+      grid-template-columns: 1fr;
+      padding-block: 1.25rem;
+    }
+    h3 {
+      font-size: 1.125rem;
+    }
   }
 </style>

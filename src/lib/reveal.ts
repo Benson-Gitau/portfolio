@@ -1,32 +1,19 @@
 /**
- * Section reveals, in reading order. Only content still below the fold is hidden, and only
- * by this script once it is running, so a failed script or reduced motion leaves everything
- * visible and nothing already on screen can flicker.
+ * Reveals: a rise of 12px and a fade over 400ms as content enters the viewport.
+ * Content is visible by default. Only elements still below the fold are hidden, only
+ * by this running script, and they are revealed well before they reach the eye line,
+ * so scrolling never meets a blank gap or a half-loaded heading.
  */
-const TARGETS = [
-  'main h2',
-  'main .statement',
-  'main .closing',
-  'main .other',
-  'main figure',
-  'main details',
-  'main :is(ul, ol) > li:not(.chip, .ledger li, .tools li, [data-diagram] li)',
-].join(',');
-
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-if (!reduced) {
-  const step = window.matchMedia('(min-width: 768px)').matches ? 70 : 40;
-
+if (!reduced && 'IntersectionObserver' in window) {
   const show = (el: HTMLElement, delay: number) => {
-    el.style.transitionDelay = `${delay}ms`;
-    el.style.setProperty('--rv-delay', `${delay}ms`);
+    if (delay) el.style.transitionDelay = `${delay}ms`;
     el.dataset.rv = 'in';
     window.setTimeout(() => {
       delete el.dataset.rv;
       el.style.removeProperty('transition-delay');
-      el.style.removeProperty('--rv-delay');
-    }, delay + 900);
+    }, delay + 600);
   };
 
   const observer = new IntersectionObserver(
@@ -36,17 +23,17 @@ if (!reduced) {
         if (!entry.isIntersecting) continue;
         const el = entry.target as HTMLElement;
         observer.unobserve(el);
-        // Passed by an anchor jump: show it at once, so scrolling back never finds a gap.
+        // Passed by an anchor jump: show at once.
         const passed = entry.boundingClientRect.bottom < 0;
-        show(el, passed ? 0 : Math.min(index++, 4) * step);
+        show(el, passed ? 0 : Math.min(index++, 3) * 60);
       }
     },
-    // The huge top margin counts everything above the viewport as reached.
-    { rootMargin: '1000000px 0px -8% 0px' },
+    // Fires slightly before the element enters, so the fade is under way as it arrives.
+    { rootMargin: '1000000px 0px 10% 0px' },
   );
 
-  document.querySelectorAll<HTMLElement>(TARGETS).forEach((el) => {
-    if (el.getBoundingClientRect().top <= window.innerHeight) return;
+  document.querySelectorAll<HTMLElement>('main [data-reveal]').forEach((el) => {
+    if (el.getBoundingClientRect().top <= window.innerHeight * 1.1) return;
     el.dataset.rv = 'out';
     observer.observe(el);
   });

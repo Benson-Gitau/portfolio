@@ -1,0 +1,142 @@
+---
+// 16:9 click-to-load YouTube player (youtube-nocookie, captions on). Dark until the
+// poster loads; a --panel play button sits in the centre. Nothing loads from YouTube
+// before the click.
+import { Image } from 'astro:assets';
+import Placeholder from './Placeholder.astro';
+import { introVideoReady, spokenDuration, youtubeEmbed, type ResolvedImage } from '../lib/content';
+
+interface Props {
+  videoId: string;
+  poster: ResolvedImage | null;
+  /** Shown in the top-right badge with "· CC", e.g. "1:30" or "90s". */
+  duration?: string;
+  /** Accessible name of the play button, before the spoken duration. */
+  label: string;
+  /** iframe title once loaded. */
+  title: string;
+  /** Small white tag top-left, e.g. "Demo build". */
+  tag?: string;
+  posterPosition?: string;
+  sizes?: string;
+}
+const { videoId, poster, duration = '', label, title, tag, posterPosition = '50% 100%', sizes = '(min-width: 960px) 640px, 92vw' } = Astro.props;
+const dev = import.meta.env.DEV;
+const ready = introVideoReady(videoId);
+// Development keeps an unfinished player visible and marked; production shows the poster only.
+const showPlay = ready || dev;
+const spoken = duration ? `, ${spokenDuration(duration)}` : '';
+---
+
+<figure class="player" data-yt={ready ? youtubeEmbed(videoId) : ''} data-yt-title={title}>
+  <div class="frame" data-yt-frame>
+    {poster ? (
+      <Image src={poster.src} alt={showPlay ? '' : poster.alt} widths={[560, 800, 1200]} sizes={sizes} format="webp" quality={80} style={`object-position:${posterPosition}`} />
+    ) : (
+      <span class="no-poster" />
+    )}
+    {tag && <span class="tag-badge">{tag}</span>}
+    {showPlay && (
+      <>
+        {duration && <span class="badge">{duration} · CC</span>}
+        <button type="button" class="play" data-yt-play aria-label={`${label}${spoken}`}>
+          <svg viewBox="0 0 16 16" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M4.5 2.6v10.8a.8.8 0 0 0 1.2.7l8.6-5.4a.8.8 0 0 0 0-1.4L5.7 1.9a.8.8 0 0 0-1.2.7Z"></path></svg>
+        </button>
+      </>
+    )}
+  </div>
+  <p class="status" data-yt-status role="status">{dev && !ready && <Placeholder text={videoId || '[YOUTUBE_ID]'} />}</p>
+</figure>
+
+<style>
+  .player {
+    margin: 0;
+  }
+  .frame {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 20px;
+    background: var(--video-ground);
+  }
+  .frame :global(img),
+  .frame :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .frame :global(img) {
+    object-fit: contain;
+  }
+  .no-poster {
+    position: absolute;
+    inset: 0;
+  }
+  .badge,
+  .tag-badge {
+    position: absolute;
+    top: 14px;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-geist-mono);
+    font-size: 0.75rem;
+  }
+  .badge {
+    right: 14px;
+    background: var(--scrim);
+    color: var(--card);
+  }
+  .tag-badge {
+    left: 14px;
+    background: var(--card);
+    color: var(--ink);
+  }
+  .play {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 84px;
+    height: 84px;
+    padding-left: 4px;
+    border-radius: 50%;
+    background: var(--panel);
+    color: var(--ink);
+    box-shadow: 0 18px 36px -16px rgb(0 0 0 / 0.5);
+    cursor: pointer;
+    transition: transform var(--dur-micro) var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .play:hover {
+      transform: scale(1.06);
+    }
+  }
+  .play:active {
+    transform: scale(0.95);
+  }
+  .play:focus-visible {
+    outline-color: var(--card);
+    box-shadow: 0 0 0 5px var(--ink);
+  }
+  .status:empty {
+    display: none;
+  }
+  .status {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+  @media (max-width: 759px) {
+    .play {
+      width: 72px;
+      height: 72px;
+    }
+  }
+</style>
+
+<script>
+  import '../lib/youtube';
+</script>

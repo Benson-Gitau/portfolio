@@ -102,6 +102,13 @@ export async function getProjects() {
             )
           ).filter((item) => item !== null),
           demoVideo: entry.demoVideo.discriminant ? entry.demoVideo.value : null,
+          cardTitle: entry.cardTitle || entry.title,
+          // Screenshot for the home panel; the cover stands in until one exists.
+          panelImage:
+            (await resolveImage(entry.panelImage, `${slug} panel image`)) ??
+            (await resolveImage(entry.coverImage, `${slug} cover`)),
+          // A page with unwritten basics is built only in development.
+          hasPage: isDev || ![entry.title, entry.summary, entry.problem].some(hasPlaceholder),
           bodyHtml: await renderBody(body),
         };
       }),
@@ -110,19 +117,37 @@ export async function getProjects() {
 
 export const getFeaturedProjects = async () => (await getProjects()).filter((project) => project.featured);
 
-/** Only testimonials with permission exist past this point. */
+/**
+ * Only testimonials with permission exist past this point. In production, anything still
+ * holding a [PLACEHOLDER] (the dev seed reviews) is dropped too. A name leaves this file
+ * only when the review is not anonymous and the name is approved; anonymous reviews lose
+ * their photo as well.
+ */
 export async function getTestimonials() {
   const all = await reader.collections.testimonials.all();
-  return all
-    .filter(({ entry }) => entry.permissionToPublish)
-    .map(({ slug, entry }) => {
-      const { company, nameApproved, ...rest } = entry;
-      if (entry.format.discriminant === 'video' && !entry.format.value.transcript.trim()) {
-        problem(`testimonial ${slug}: video needs a transcript`);
-      }
-      return { ...rest, slug, company: nameApproved && company ? company : null };
-    })
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const items = await Promise.all(
+    all
+      .filter(({ entry }) => entry.permissionToPublish)
+      .filter(({ entry }) => {
+        if (isDev) return true;
+        const v = entry.type.value;
+        const texts = [entry.role, entry.practiceType, 'quote' in v ? v.quote : v.videoId];
+        return !texts.some(hasPlaceholder);
+      })
+      .map(async ({ slug, entry }) => {
+        const { personName, nameApproved, anonymous, photo, ...rest } = entry;
+        const v = entry.type.value;
+        if (entry.type.discriminant === 'video' && 'videoId' in v && !v.videoId.trim()) problem(`testimonial ${slug}: video has no YouTube ID`);
+        return {
+          ...rest,
+          slug,
+          name: !anonymous && nameApproved && personName ? personName : null,
+          photo: anonymous ? null : await resolveImage(photo, `testimonial ${slug} photo`),
+          poster: 'poster' in v ? await resolveImage(v.poster, `testimonial ${slug} poster`) : null,
+        };
+      }),
+  );
+  return items.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }
 
 export const getFeaturedTestimonials = async () => (await getTestimonials()).filter((item) => item.featured);
@@ -130,3 +155,20 @@ export const getFeaturedTestimonials = async () => (await getTestimonials()).fil
 export async function getProjectTestimonials(projectSlug: string) {
   return (await getTestimonials()).filter((item) => item.project === projectSlug);
 }
+
+/** The intro video plays only once it has a real YouTube ID. */
+export const introVideoReady = (id: string | null | undefined) => Boolean(id?.trim()) && !hasPlaceholder(id);
+
+/** "1:30" → "1 minute 30 seconds", for labels read aloud. */
+export function spokenDuration(value: string) {
+  const secondsOnly = value.trim().match(/^(\d+)\s*s$/i);
+  if (secondsOnly) return `${Number(secondsOnly[1])} seconds`;
+  const match = value.trim().match(/^(\d+):(\d{1,2})$/);
+  if (!match) return value;
+  const [m, s] = [Number(match[1]), Number(match[2])];
+  const part = (n: number, unit: string) => (n ? `${n} ${unit}${n === 1 ? '' : 's'}` : '');
+  return [part(m, 'minute'), part(s, 'second')].filter(Boolean).join(' ') || value;
+}
+
+export const youtubeEmbed = (id: string) =>
+  `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&cc_load_policy=1&rel=0&playsinline=1`;

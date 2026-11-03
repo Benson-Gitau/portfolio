@@ -2,10 +2,11 @@
 import About from '../components/home/About.astro';
 import FinalCta from '../components/home/FinalCta.astro';
 import Hero from '../components/home/Hero.astro';
-import Leaks from '../components/home/Leaks.astro';
+import Jambo from '../components/home/Jambo.astro';
 import Process from '../components/home/Process.astro';
 import Services from '../components/home/Services.astro';
-import Showcase from '../components/home/Showcase.astro';
+import ProjectPanel from '../components/home/ProjectPanel.astro';
+import ToolRow from '../components/home/ToolRow.astro';
 import WorkGrid from '../components/home/WorkGrid.astro';
 import Testimonials from '../components/Testimonials.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
@@ -16,9 +17,9 @@ const [home, testimonials, settings] = await Promise.all([getHome(), getFeatured
 const person = {
   '@type': 'Person',
   name: 'Benson Gitau',
-  jobTitle: 'Automation & AI Systems Consultant',
-  sameAs: [settings.linkedinUrl, settings.githubUrl, settings.xUrl],
-  ...(hasPlaceholder(settings.siteUrl) ? {} : { url: settings.siteUrl }),
+  jobTitle: home.hero.title,
+  sameAs: [settings.linkedinUrl, settings.upworkUrl, settings.fiverrUrl, settings.githubUrl].filter((url) => url && !hasPlaceholder(url)),
+  ...(Astro.site ? { url: Astro.site.href } : {}),
 };
 const structuredData = {
   '@context': 'https://schema.org',
@@ -36,13 +37,14 @@ const structuredData = {
 
 <SiteLayout title={home.seo.title} description={home.seo.description}>
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(structuredData).replaceAll('<', '\\u003c')} />
-  <Hero hero={home.hero} cards={home.heroCards} />
-  <Showcase />
-  <Leaks problem={home.problem} outcomes={home.outcomes} />
-  <Process process={home.process} />
-  <Testimonials heading={home.proof.heading} items={testimonials} />
-  <WorkGrid work={home.work} />
-  <Services services={home.services} />
-  <About about={home.about} />
-  <FinalCta cta={home.finalCta} />
+  <Hero />
+  <ToolRow />
+  <ProjectPanel />
+  <Jambo />
+  <Process />
+  <WorkGrid />
+  <Services />
+  <Testimonials eyebrow={home.reviews.eyebrow} heading={home.reviews.heading} items={testimonials} />
+  <About />
+  <FinalCta />
 </SiteLayout>

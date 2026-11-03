@@ -1,5 +1,5 @@
 name: OpenAI
 category: Automation
 icon: null
-showInToolsStrip: true
-order: 10
+showInToolsStrip: false
+order: 11

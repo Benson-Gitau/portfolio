@@ -1,5 +1,5 @@
 name: Claude
 category: Automation
 icon: null
-showInToolsStrip: true
-order: 11
+showInToolsStrip: false
+order: 12

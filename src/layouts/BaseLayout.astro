@@ -1,7 +1,7 @@
 ---
 import { Font, getImage } from 'astro:assets';
 import '../styles/global.css';
-import { getSettings, hasPlaceholder, resolveImage, type ResolvedImage } from '../lib/content';
+import { getSettings, resolveImage, type ResolvedImage } from '../lib/content';
 
 interface Props {
   title: string;
@@ -12,7 +12,8 @@ interface Props {
 
 const { title, description, noindex = false, shareImage } = Astro.props;
 const settings = await getSettings();
-const siteUrl = settings.siteUrl && !hasPlaceholder(settings.siteUrl) ? settings.siteUrl : null;
+// From astro.config: PUBLIC_SITE_URL, else settings.siteUrl, and only once it is a real https URL.
+const siteUrl = Astro.site?.href ?? null;
 const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/').replace(/(.+)\/$/, '$1');
 const canonical = siteUrl ? new URL(path, siteUrl).href : null;
 
@@ -25,11 +26,10 @@ const ogImage =
 ---
 
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-palette={settings.palette}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0B1220" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     {noindex && <meta name="robots" content="noindex" />}
@@ -49,23 +49,6 @@ const ogImage =
     {ogImage && <meta name="twitter:image" content={ogImage} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
-
-    <!-- Runs before first paint so the saved theme never flashes. -->
-    <script is:inline>
-      (function () {
-        var saved = null;
-        try {
-          saved = localStorage.getItem('theme');
-        } catch (e) {}
-        var theme =
-          saved === 'light' || saved === 'dark'
-            ? saved
-            : window.matchMedia('(prefers-color-scheme: light)').matches
-              ? 'light'
-              : 'dark';
-        document.documentElement.dataset.theme = theme;
-      })();
-    </script>
 
     <!-- UTM values wait in sessionStorage for the booking embed. -->
     <script is:inline>

@@ -1,5 +1,5 @@
 name: Stripe
 category: Payments
 icon: null
-showInToolsStrip: true
-order: 6
+showInToolsStrip: false
+order: 8

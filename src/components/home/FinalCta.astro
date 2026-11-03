@@ -1,75 +1,40 @@
 ---
-import BookingEmbed from '../BookingEmbed.astro';
-import Heading from '../Heading.astro';
-import { getSettings } from '../../lib/content';
-
-interface Props {
-  cta: { heading: string; text: string };
-  /** Replaces the email and LinkedIn links below the calendar. */
-  note?: string;
-}
-const { cta, note } = Astro.props;
-const settings = await getSettings();
+import { getHome } from '../../lib/content';
+const { finalCta } = await getHome();
 ---
 
-<section class="final" id="contact">
-  <div class="inner wrap">
-    <Heading class="h2" text={cta.heading} />
-    <p class="text">{cta.text}</p>
-    <div class="calendar glass"><BookingEmbed loadOn="view" /></div>
-    {note ? (
-      <p class="note">{note}</p>
-    ) : (
-      <ul class="links">
-        <li><a class="text-link" href={`mailto:${settings.email}`}>{settings.email}</a></li>
-        <li><a class="text-link" href={settings.linkedinUrl}>LinkedIn</a></li>
-      </ul>
-    )}
-  </div>
+<section class="final wrap" id="book" aria-labelledby="book-title">
+  <h2 id="book-title" data-reveal>{finalCta.heading}</h2>
+  <p class="text" data-reveal>{finalCta.text}</p>
+  <a class="btn btn-primary" href="#book" data-book data-reveal>{finalCta.buttonLabel}</a>
 </section>
 
 <style>
   .final {
-    margin-top: var(--space-section);
-    background: var(--surface);
-  }
-  .inner {
     display: grid;
     justify-items: center;
-    padding-block: clamp(4rem, 8vw, 7rem);
+    padding-block: clamp(3.5rem, 6vw, 5.5rem);
     text-align: center;
   }
-  .final :global(.h2) {
-    max-width: 22ch;
+  h2 {
+    max-width: 14ch;
+    font-size: clamp(2.5rem, 5.5vw, 4.75rem);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
   }
   .text {
-    max-width: 52ch;
+    max-width: 44ch;
     margin-top: 1.25rem;
-    color: var(--text);
+    color: var(--muted);
     font-size: 1.0625rem;
   }
-  .calendar {
-    width: min(100%, 52rem);
-    min-width: 0;
-    margin-top: 2.5rem;
-    padding: 0.5rem;
-    border-radius: var(--radius-lg);
-    text-align: left;
+  .btn {
+    margin-top: 2rem;
   }
-  .note {
-    margin-top: 1rem;
-  }
-  .links {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    column-gap: 1.25rem;
-    margin-top: 1rem;
-  }
-  .links a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    overflow-wrap: anywhere;
+  @media (max-width: 759px) {
+    .final {
+      padding-block: 3.5rem;
+    }
   }
 </style>

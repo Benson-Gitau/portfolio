@@ -1,67 +1,220 @@
 ---
-// Renders nothing, including its heading, unless an approved testimonial qualifies.
-import Heading from './Heading.astro';
-import VideoLite from './VideoLite.astro';
-import type { getTestimonials } from '../lib/content';
+// Renders nothing, heading included, unless an approved review qualifies.
+import { Image } from 'astro:assets';
+import SectionHead from './SectionHead.astro';
+import { introVideoReady, youtubeEmbed, type getTestimonials } from '../lib/content';
 
 interface Props {
+  eyebrow?: string;
   heading: string;
   items: Awaited<ReturnType<typeof getTestimonials>>;
 }
-const { heading, items } = Astro.props;
+const { eyebrow, heading, items } = Astro.props;
+const via = { upwork: 'via Upwork', fiverr: 'via Fiverr', direct: '' } as const;
 ---
 
 {items.length > 0 && (
-  <section class="proof section wrap">
-    <Heading class="h2" text={heading} />
-    <ul>
-      {items.map((item) => (
-        <li>
-          {item.format.discriminant === 'text' ? (
-            <blockquote>{item.format.value.quote}</blockquote>
-          ) : (
-            <VideoLite video={item.format.value} />
-          )}
-          <p class="who">
-            <strong>{item.personName}</strong>{item.role && `, ${item.role}`}{item.company && `, ${item.company}`}
-          </p>
-          <p class="mono-label source">{item.source}</p>
-        </li>
-      ))}
+  <section class="reviews wrap section" id="reviews" aria-labelledby="reviews-title">
+    <SectionHead eyebrow={eyebrow} heading={heading} id="reviews-title" />
+    <ul class="masonry">
+      {items.map((item) => {
+        const who = [item.name, item.role].filter(Boolean).join(', ');
+        const where = item.practiceType || via[item.source];
+        if (item.type.discriminant === 'video') {
+          const v = item.type.value;
+          const ready = introVideoReady(v.videoId);
+          return (
+            <li class="item" data-reveal>
+              <figure class="video" data-yt={ready ? youtubeEmbed(v.videoId) : ''} data-yt-title={`Video review from ${item.role}`}>
+                <div class:list={['poster', v.orientation]} data-yt-frame>
+                  {item.poster && <Image src={item.poster.src} alt="" widths={[360, 560, 800]} sizes="(min-width: 960px) 380px, 90vw" format="webp" quality={78} />}
+                  <span class="badge">Video{v.duration && ` · ${v.duration}`}</span>
+                  <button type="button" class="play" data-yt-play aria-label={`Play video review from ${item.role}, ${item.practiceType}`}>
+                    <svg viewBox="0 0 16 16" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M4.5 2.6v10.8a.8.8 0 0 0 1.2.7l8.6-5.4a.8.8 0 0 0 0-1.4L5.7 1.9a.8.8 0 0 0-1.2.7Z"></path></svg>
+                  </button>
+                </div>
+                <figcaption class="caption"><strong>{who}</strong>{where && <> · <span class="muted">{where}</span></>}</figcaption>
+                <p class="status" data-yt-status role="status"></p>
+              </figure>
+            </li>
+          );
+        }
+        const t = item.type.value;
+        return (
+          <li class="item" data-reveal>
+            <figure class:list={['quote', { pull: t.pullQuote }]}>
+              {!t.pullQuote && <span class="mark serif" aria-hidden="true">“</span>}
+              <blockquote>{t.quote}</blockquote>
+              <figcaption class="caption">
+                {!t.pullQuote && (
+                  <span class="avatar">{item.photo && <Image src={item.photo.src} alt="" width={72} height={72} format="webp" />}</span>
+                )}
+                <span><strong>{who}</strong><br /><span class="muted">{where}</span></span>
+              </figcaption>
+            </figure>
+          </li>
+        );
+      })}
     </ul>
   </section>
 )}
 
 <style>
-.proof :global(.h2) {
-    text-align: center;
+  .masonry {
+    columns: 3 300px;
+    column-gap: 24px;
+    margin-top: 3.5rem;
   }
-  ul {
+  .item {
+    break-inside: avoid;
+    margin-bottom: 24px;
+  }
+  figure {
+    margin: 0;
+  }
+
+  /* Video card */
+  .poster {
+    position: relative;
     display: grid;
-    gap: 2rem;
-    margin-top: 3rem;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 20px;
+    background: var(--soft);
+  }
+  .poster.portrait {
+    aspect-ratio: 4 / 5;
+  }
+  .poster.landscape {
+    aspect-ratio: 16 / 10;
+  }
+  .poster :global(img),
+  .poster :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 0;
+  }
+  .badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-pill);
+    background: var(--card);
+    color: var(--ink);
+    font-family: var(--font-geist-mono);
+    font-size: 0.75rem;
+  }
+  .play {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: var(--btn);
+    color: var(--btn-text);
+    box-shadow: var(--shadow-chip);
+    cursor: pointer;
+    transition: transform var(--dur-micro) var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .play:hover {
+      transform: scale(1.06);
+    }
+  }
+  .play:active {
+    transform: scale(0.95);
+  }
+  .play:focus-visible {
+    outline-color: var(--card);
+    box-shadow: 0 0 0 5px var(--ink);
+  }
+
+  /* Text card */
+  .quote {
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--card);
+  }
+  .mark {
+    display: block;
+    height: 2.25rem;
+    color: var(--dot);
+    font-size: 4rem;
+    line-height: 1;
   }
   blockquote {
-    font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
-    line-height: 1.5;
+    font-size: 1.0625rem;
+    line-height: 1.55;
   }
-  .who {
-    margin-top: 1rem;
+  .quote .caption {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  .avatar {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--soft);
+  }
+  .avatar :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Pull quote: --panel, captions in --ink for contrast in every palette. */
+  .pull {
+    border: 0;
+    background: var(--panel);
+  }
+  .pull blockquote {
     font-family: var(--font-geist);
+    font-size: 1.375rem;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
   }
-  .source {
+  .pull .caption,
+  .pull .muted {
+    color: var(--ink);
+  }
+
+  .caption {
+    margin-top: 0.875rem;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+  }
+  .caption strong {
+    font-weight: 500;
+  }
+  .muted {
+    color: var(--muted);
+  }
+  .status:empty {
+    display: none;
+  }
+  .status {
     margin-top: 0.25rem;
-    color: var(--text-muted);
+    color: var(--muted);
+    font-size: 0.875rem;
   }
-  @media (min-width: 1024px) {
-    ul {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 4rem;
-    }
-    li:nth-child(even) {
-      margin-top: 4rem;
-      padding-left: 4rem;
-      border-left: 1px solid var(--glass-border);
+  @media (max-width: 759px) {
+    .masonry {
+      columns: 1;
+      margin-top: 2.5rem;
     }
   }
 </style>
+
+<script>
+  import '../lib/youtube';
+</script>

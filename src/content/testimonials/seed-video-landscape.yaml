@@ -1,0 +1,22 @@
+personName: '[SEED] Landscape video'
+type:
+  discriminant: video
+  value:
+    videoId: '[SEED_VIDEO_ID]'
+    poster:
+      image: null
+      alt: ''
+    duration: '1:10'
+    orientation: landscape
+role: '[SEED] Studio owner'
+practiceType: '[SEED] Gym'
+source: direct
+anonymous: true
+nameApproved: false
+photo:
+  image: null
+  alt: ''
+project: null
+permissionToPublish: true
+featured: true
+order: 4

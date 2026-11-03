@@ -1,0 +1,33 @@
+---
+import { getToolsStrip } from '../../lib/content';
+const tools = await getToolsStrip();
+---
+
+<div class="wrap">
+  <ul class="tools" aria-label="Tools I build with">
+    {tools.map((tool) => <li>{tool.name}</li>)}
+  </ul>
+</div>
+
+<style>
+  .tools {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    padding-block: 1.5rem;
+    border-block: 1px solid var(--line);
+    color: var(--muted);
+    font-family: var(--font-geist);
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  @media (max-width: 759px) {
+    .tools {
+      justify-content: center;
+      gap: 0.5rem 1.125rem;
+      font-size: 1rem;
+    }
+  }
+</style>

@@ -1,0 +1,92 @@
+---
+import { getHome } from '../../lib/content';
+const { jambo } = await getHome();
+// Fixed tilts, so the row looks hand-placed but never shifts between builds.
+const tilts = [-3, 2.5, -1.5, 4, -4, 1.5];
+---
+
+<section class="jambo wrap" aria-labelledby="jambo-title">
+  <h2 class="hello serif" id="jambo-title" data-reveal>{jambo.greeting}</h2>
+  <p class="statement" data-reveal>{jambo.statement} <span class="faded">{jambo.statementFaded}</span></p>
+  <ul class="chips" aria-label="What I build">
+    {jambo.chips.map((chip, i) => (
+      <li style={`--tilt:${tilts[i % tilts.length]}deg; --i:${i}`}>
+        <span class="pill"><span class="pill-dot" aria-hidden="true"></span>{chip}</span>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .jambo {
+    display: grid;
+    justify-items: center;
+    padding-top: clamp(3rem, 5.5vw, 5rem);
+    text-align: center;
+  }
+  .hello {
+    font-size: 1.875rem;
+    line-height: 1.1;
+  }
+  .statement {
+    max-width: 780px;
+    margin-top: 1.25rem;
+    font-family: var(--font-geist);
+    font-size: clamp(1.625rem, 3.2vw, 2.5rem);
+    font-weight: 400;
+    line-height: 1.18;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.875rem 1rem;
+    max-width: 1140px;
+    margin-top: 3rem;
+    padding-bottom: 18px;
+  }
+  .chips li {
+    rotate: var(--tilt);
+  }
+  .chips li:nth-child(even) {
+    translate: 0 18px;
+  }
+  .chips .pill {
+    padding: 0.625rem 1.125rem;
+    font-size: 1rem;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .chips .pill {
+      animation: float 5.6s ease-in-out infinite alternate;
+      animation-delay: calc(var(--i) * -0.9s);
+    }
+  }
+  @keyframes float {
+    from {
+      transform: translateY(-4px);
+    }
+    to {
+      transform: translateY(4px);
+    }
+  }
+  @media (max-width: 759px) {
+    .jambo {
+      padding-top: 3rem;
+    }
+    .chips {
+      gap: 0.625rem;
+      padding-bottom: 0;
+    }
+    .chips li,
+    .chips li:nth-child(even) {
+      rotate: none;
+      translate: none;
+    }
+    .chips .pill {
+      padding: 0.5rem 0.875rem;
+      font-size: 0.9375rem;
+    }
+  }
+</style>

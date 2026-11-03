@@ -1,0 +1,18 @@
+personName: '[SEED] Pull quote'
+type:
+  discriminant: text
+  value:
+    quote: '[SEED] A short placeholder pull quote.'
+    pullQuote: true
+role: '[SEED] Founder'
+practiceType: '[SEED] Coaching business'
+source: fiverr
+anonymous: true
+nameApproved: false
+photo:
+  image: null
+  alt: ''
+project: null
+permissionToPublish: true
+featured: true
+order: 3

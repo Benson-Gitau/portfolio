@@ -97,6 +97,8 @@ Record the version of each package you install in your phase report.
 
 ## Design tokens
 
+> **Superseded (2026-11-03).** Colours now come from the soft-wash editorial brief: six palettes selected in Keystatic settings, defined in `src/styles/global.css` and summarised in `DESIGN.md`. Dark mode is removed. The tokens below are kept for history only. Fonts are unchanged apart from Geist gaining weights 300 and 400.
+
 Define these as CSS custom properties and map them into Tailwind's theme. Verify every text/background pair against WCAG AA in both themes.
 
 ```css

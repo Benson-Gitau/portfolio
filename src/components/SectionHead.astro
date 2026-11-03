@@ -1,0 +1,28 @@
+---
+// Serif eyebrow over a centred Geist heading. The optional tail is set in --faded, never in serif.
+import Placeholder from './Placeholder.astro';
+
+interface Props {
+  eyebrow?: string;
+  heading: string;
+  faded?: string;
+  id?: string;
+}
+const { eyebrow, heading, faded, id } = Astro.props;
+---
+
+<header class="section-head" data-reveal>
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  <h2 class="h2" id={id}><Placeholder text={heading} />{faded && <> <span class="faded">{faded}</span></>}</h2>
+</header>
+
+<style>
+  .section-head {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+  .h2 {
+    max-width: 20ch;
+  }
+</style>

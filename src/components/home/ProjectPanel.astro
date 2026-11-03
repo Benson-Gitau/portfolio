@@ -1,0 +1,118 @@
+---
+// Images only: no titles, no text. Slots come from the projects' panel positions (1–4).
+// In production the panel appears only once every slot has a real image.
+import { Image } from 'astro:assets';
+import { getFeaturedProjects, getHome } from '../../lib/content';
+
+const [projects, home] = await Promise.all([getFeaturedProjects(), getHome()]);
+const slots = projects
+  .filter((project) => project.panelOrder > 0)
+  .sort((a, b) => a.panelOrder - b.panelOrder)
+  .slice(0, 4);
+const complete = slots.length === 4 && slots.every((slot) => slot.panelImage);
+const show = import.meta.env.DEV ? slots.length > 0 : complete;
+---
+
+{show && (
+  <section class="wrap panel-section" aria-label={home.panel.label}>
+    <div class="panel">
+      {slots.map((slot, i) => (
+        <figure class:list={['shot', `s${i + 1}`]} data-reveal>
+          {slot.panelImage ? (
+            <Image
+              src={slot.panelImage.src}
+              alt={slot.panelImage.alt}
+              widths={[400, 640, 960]}
+              sizes={i === 1 || i === 2 ? '(min-width: 760px) 26vw, 45vw' : '(min-width: 760px) 34vw, 90vw'}
+              format="webp"
+              quality={80}
+            />
+          ) : (
+            <span class="tile mono-label"><mark class="placeholder-mark">[{slot.panelLabel || `Screenshot · ${slot.cardTitle}`}]</mark></span>
+          )}
+        </figure>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .panel-section {
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+  }
+  .panel {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr 1.15fr;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    padding: 28px;
+    border-radius: var(--radius-lg);
+    background: var(--panel);
+  }
+  .shot {
+    margin: 0;
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: var(--shadow-image);
+  }
+  .s1 {
+    grid-row: 1 / 3;
+    grid-column: 1;
+  }
+  .s2,
+  .s3 {
+    grid-column: 2;
+    aspect-ratio: 4 / 3;
+  }
+  .s4 {
+    grid-row: 1 / 3;
+    grid-column: 3;
+  }
+  .shot :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .tile {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    min-height: 100%;
+    padding: 1rem;
+    background: var(--tile);
+    color: var(--ink);
+    font-weight: 400;
+    text-align: center;
+  }
+  .tile .placeholder-mark {
+    outline: none;
+    background: none;
+    color: inherit;
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 759px) {
+    .panel {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: none;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 22px;
+    }
+    .s1,
+    .s4 {
+      grid-row: auto;
+      grid-column: 1 / -1;
+      aspect-ratio: 16 / 10;
+    }
+    .s2,
+    .s3 {
+      grid-column: auto;
+      aspect-ratio: 4 / 5;
+    }
+    .shot {
+      border-radius: 12px;
+    }
+  }
+</style>

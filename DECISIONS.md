@@ -145,3 +145,65 @@ Source: Benson's soft-wash editorial brief, 2026-11-03. Its colour tokens replac
 | Testimonials keep `permissionToPublish` as a build gate. A name shows only when `anonymous` is false and `nameApproved` is true | Benson's choice; matches CLAUDE.md rule 6 |
 | Pull-quote captions use `--ink`, not `--muted` | `--muted` on `--panel` is 3.29:1 in midnight, below AA |
 | The uncommitted design.webp redesign was committed as a checkpoint before this work | Benson's choice, for a clean diff and easy rollback |
+| Home work cards use a new `cardTitle` field; project page headlines are unchanged | The brief's short names ("Gym Trial-to-Member") are card labels. Retitling the pages would rewrite approved case-study copy |
+| The two new demos ("Med Spa Speed-to-Lead", "Clinic No-Show Recovery") have no page in production while their title, summary or problem is a placeholder; their cards show without a link | Agreed with Benson. In development the pages build so the layout can be checked |
+| Panel placeholder labels ("Screenshot · Speed-to-lead SMS thread" etc.) are mine | The brief gives one example label. They show in development only |
+| The project panel shows in production only when all four slots have an image | It is images only; a part-empty panel would be bare tiles |
+| On phones the panel's last image also spans both columns | The brief spans the first; with four images the fourth would otherwise sit alone in half a row |
+| Gym Trial-to-Member tools reordered to Mindbody, GoHighLevel, n8n | The work card shows the first two tools, and the brief lists Mindbody and GHL |
+| Tool tags use full names ("GoHighLevel"), not "GHL" | The brief uses both forms; full names match the tool row |
+| Top and bottom washes are body background layers; the middle wash sits on the process section with its top edge masked out | A wash painted on a section box starts on a visible line. The mask is not a visible gradient |
+| Process card straightening and the path draw are triggered once on entering view (900ms and 1.6s), not scrubbed with scroll position | Same visual result without scroll-linked work; holds in every browser |
+| Process cards keep their ±1.5° tilt on phones and do not straighten there | The brief fixes ±1.5° on mobile |
+| The footer name scales at 17vw below 530px instead of holding the 90px floor | At 90px "Gitau" runs off the side of a 390px screen; the brief wants the bottom edge to do the cropping |
+| Intro poster is the cut-out portrait set to `contain`, standing on the dark video ground | A 16:9 cover crop cut off the head |
+| Social links in About are text pills (LinkedIn, Upwork, Fiverr), not logos | No logo files, and brand marks would add the extra colours the brief removes |
+| "Watch intro" and the About play button stay visible in development while the video ID is a placeholder; production hides them as the brief says | Unfinished content is shown marked in development |
+| Testimonials: a review with any [PLACEHOLDER] in its role, practice type, quote or video ID is dropped from production | This is how the dev seed reviews never ship |
+| Header is not sticky | "Not sticky-heavy". It scrolls away with the top wash |
+| `theme-color` meta removed | Dark mode is gone and the palette lives in CSS |
+| Placeholder build warning now catches mixed-case values such as [Years] | It only matched uppercase, so [Years] could ship unnoticed. Production now hides it too |
+| Services section restored at Benson's request, between Selected Work and Reviews, with its original seven items and copy | Benson's request after the soft-wash build. It follows the work, where the visitor has just seen what gets built |
+| Services heading is "Ways I can help", in plain Geist; the old `*help*` accent marker is dropped | The brief allows no serif words inside headings |
+| Services is a ruled two-column list (title, then muted description), not cards | Process and Work already use card rows; a list reads as a menu and keeps cards from becoming the page's only structure |
+| "/ Services" eyebrow reused from the previous build; no Services link added to the header nav | The brief fixes the nav as Work, Process, Reviews, About |
+| Service structured data (schema.org `Service`) restored | It was removed with the section |
+| Services added to the header nav (after Work) and the footer links. Supersedes the "no Services link" row above | Benson's request. It sits after Work in both places so the menu reads work first, then services |
+| Section spacing tightened site-wide: `--space-section` is now clamp(3rem, 5.5vw, 5rem), down from clamp(5rem, 9vw, 8rem). Jambo top padding, the process stage, the final call to action, the med spa booking block, case study headers and the 404 page were reduced to match | Benson: too much space between sections. Homepage gaps between sections went from about 256px to about 150px on desktop and from about 160px to 96px on phones. Jambo top padding drops below the brief's 112px at Benson's request |
+
+## /med-spas restyle (soft-wash)
+
+| Decision | Why |
+| --- | --- |
+| Full restyle in the soft-wash direction; every line of copy kept from the build spec | Benson chose the full restyle |
+| `*accent*` markers removed from the med spa headings in Keystatic; headings are plain Geist 400 | The direction allows no serif or coloured words inside headings. Only the markup changed, not the words |
+| The hero eyebrow is a white pill with a `--dot` dot, so "Built for {spa}" reads as a personal tag | It is the page's one personal moment for cold-email visitors |
+| Demo video sits on a `--panel` mat, with a "Demo build" tag top-left and "90s · CC" top-right; its title and transcript link sit under the player | Reuses the homepage panel surface. The demo stays labelled as a demo build |
+| A shared `VideoPlayer` component now serves the About intro and the med spa demo | One click-to-load player, so both behave and look the same |
+| "Where bookings leak" and "Handled carefully" are split layouts (heading left, ruled list right) with no icons | The brief removes checkmarks and coloured status icons. The split gives the page a change of rhythm from centred sections |
+| "The system" is numbered nodes on a dashed line over the middle wash: across on desktop, down on phones. The first node is filled with `--btn` | Replaces the case-study SystemDiagram and its ticks on this page. Numbers stay because the order is the point |
+| "Where to start": the first offer sits on `--panel` and is wider | The spec orders the offers by where to start, so the first one leads |
+| Platform chips float and tilt like the homepage chips; no tilt on phones | Same chip language as the homepage |
+| Proof card is the homepage's work-card frame, with a "Demo build" tag | Keeps the demo label next to the project |
+| FAQ is a ruled accordion with a plus that turns into a cross | Native `<details>`, so it stays accessible |
+| The booking block has no white band; the calendar sits in a white card on the bottom wash | The old band was a flat surface the new direction removes |
+| BookingEmbed and BookingModal hard-coded colours replaced with tokens | Brief: no hard-coded colours in components |
+
+## Deploy: Cloudflare through GitHub (2026-11-03)
+
+| Decision | Why |
+| --- | --- |
+| **Cloudflare Workers + Workers Builds instead of Pages** (approved by Benson) | `@astrojs/cloudflare` v14, required by Astro 7, says "no longer supports deployment on Cloudflare Pages". Workers Builds gives the same flow: push `main` → production, other branches → preview URLs, no GitHub Actions or repo secrets |
+| Context7 was not available, so I used the current docs (docs.astro.build, keystatic.com, developers.cloudflare.com) and the installed package sources | The brief asked for current docs, not memory. The installed sources are the exact versions that run |
+| Output stays static; only the Keystatic-injected routes (`prerender: false`) run on the Worker | Verified on workerd: pages are `dist/client` files, and `/keystatic` and `/api/keystatic` are Worker responses |
+| `imageService: 'compile'` kept | Images are optimised with sharp during the build (Node). The Worker gets the no-op service, so there is no sharp at runtime and no Cloudflare Images binding or cost. The adapter's new default (`cloudflare-binding`) would provision a paid binding |
+| Keystatic secrets are declared optional in `astro:env` and read at runtime with `getSecret` (Worker secrets) | They are never inlined into the bundle (checked with dummy values), and a build without them passes |
+| `src/middleware.ts` returns a 503 "Keystatic is not configured" page that names the missing variables (never their values), and adds `X-Robots-Tag: noindex` to every Keystatic response | `_headers` does not apply to Worker responses, so the noindex has to come from the Worker. Static pages never reach the middleware |
+| `PUBLIC_*` values are **build** variables in Workers Builds, not runtime variables | They are inlined at build time. Plain runtime variables set in the dashboard are also replaced by `wrangler deploy` |
+| `npm run dev:github` (a small Node script setting `PUBLIC_KEYSTATIC_STORAGE=github`) forces GitHub mode locally | Keystatic creates the GitHub App only in Node, not on the Worker. A script works the same in PowerShell and bash |
+| `site` comes from `PUBLIC_SITE_URL`, then `settings.siteUrl`, and only if it is a real https URL. Canonical, share images, JSON-LD `url` and the robots sitemap line all read `Astro.site` | One source of truth. A placeholder domain never reaches search engines |
+| Node pinned to 24 (`.nvmrc`, `engines: >=24 <25`) | Workers Builds' default image is Node 24 and reads `.nvmrc`. Local is 24.11 |
+| CSP allows `'unsafe-inline'` for scripts and styles | The built pages have small inline scripts (JSON-LD, the `?spa=` personalisation, reveal, Astro islands) and inline `style` custom properties. A hash-based CSP would need Astro's CSP feature and a re-check of every script, which is a separate task. Everything else is locked to `'self'`, plus YouTube-nocookie, i.ytimg.com and the GoHighLevel domains (`*.leadconnectorhq.com`, `link.msgsndr.com`, `*.msgsndr.com`). Fonts are self-hosted by Astro, so Google Fonts is not needed |
+| `/_astro/*` immutable caching is left to the adapter, which injects it into `_headers` at build | Writing it twice would duplicate the rule |
+| No `public/_redirects` | No public route changed, and the site has never been live, so nothing old needs redirecting |
+| `nodejs_compat` and `compatibility_date: 2026-10-01` kept in `wrangler.jsonc`; the explicit `assets` block removed | The adapter docs say it generates the assets config (`dist/client`, `ASSETS` binding) itself. The old block pointed at `./dist`; the adapter already overrode it with `dist/client` in the generated config, so it was only misleading |

@@ -1,0 +1,18 @@
+personName: '[SEED] Second text review'
+type:
+  discriminant: text
+  value:
+    quote: '[SEED] A second placeholder review, longer than the first, to check how the masonry columns balance when cards have different heights.'
+    pullQuote: false
+role: '[SEED] Owner'
+practiceType: '[SEED] Med spa'
+source: direct
+anonymous: true
+nameApproved: false
+photo:
+  image: null
+  alt: ''
+project: null
+permissionToPublish: true
+featured: true
+order: 5
