@@ -532,7 +532,7 @@ Create these six `projects` entries (all `featured: true`, `order` as numbered).
 
 - Canonical URLs from `settings.siteUrl`; Open Graph and Twitter tags on every page; 1200×630 share images generated from each project's `coverImage` (fallback `settings.defaultShareImage`).
 - `sitemap.xml` and `robots.txt`; exclude `/keystatic`.
-- Structured data: `Person` on home (name, jobTitle "Automation & AI Systems Consultant", sameAs LinkedIn/GitHub/X); `Service` for each services card.
+- Structured data: `Person` on home (name, jobTitle "AI & Automation Specialist", sameAs LinkedIn/GitHub/X); `Service` for each services card.
 
 ### Acceptance checks (all must pass before final report)
 

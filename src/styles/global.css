@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ---------- Palettes (soft-wash editorial brief, section 3) ----------
-   Picked in Keystatic settings → data-palette on <html>. Forest is the default.
+   Picked in Keystatic settings → data-palette on <html>. Lime is the live palette (settings.yaml); forest is the CSS fallback.
    Components never hard-code colours: they use these tokens only. */
 :root,
 [data-palette='forest'] {
@@ -17,6 +17,9 @@
   --faded: #7d857f;
   --soft: #ece6da;
   --line: #ded7c9;
+  /* Text roles. Default to the palette colour; a palette can point them elsewhere for contrast. */
+  --faded-text: var(--faded); /* second tone in headings */
+  --quote-mark: var(--dot); /* the big quotation mark on testimonial cards */
 }
 
 [data-palette='lime'] {
@@ -32,6 +35,9 @@
   --faded: #868b85;
   --soft: #ecede6;
   --line: #e1e2da;
+  /* --faded is 2.8:1 over the lime wash and --dot 2.2:1 on white: text uses darker tokens. */
+  --faded-text: var(--muted);
+  --quote-mark: var(--ink);
 }
 
 [data-palette='navy'] {
@@ -291,7 +297,7 @@
   }
 
   .faded {
-    color: var(--faded);
+    color: var(--faded-text);
   }
 
   /* Legacy names kept for case study pages. */
@@ -306,7 +312,7 @@
 
   .accent-word {
     font: inherit;
-    color: var(--faded);
+    color: var(--faded-text);
   }
 
   .soft-card {

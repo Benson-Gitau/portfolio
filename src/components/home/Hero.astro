@@ -1,6 +1,20 @@
 ---
-import { Image } from 'astro:assets';
+/**
+ * Home hero: the centred layout from HeroCentered.astro, with the Identity Cube
+ * where the portrait used to be. Copy and the portrait still come from Keystatic
+ * (home.hero), so nothing here is hard-coded.
+ *
+ *            Hi, I'm Benson
+ *     AI & Automation Specialist       ← headline sits above the cube
+ *   [available]     ┌──────┐     statement
+ *   audience        │ CUBE │     [Book a call] [Watch intro]
+ *                   └──────┘
+ *                 face buttons
+ *
+ * Below 960px: headline → cube → statement + buttons → pill + audience.
+ */
 import Placeholder from '../Placeholder.astro';
+import IdentityCube from '../IdentityCube/IdentityCube.astro';
 import { getHome, introVideoReady, resolveImage } from '../../lib/content';
 
 const home = await getHome();
@@ -8,61 +22,65 @@ const { hero } = home;
 const portrait = await resolveImage(hero.heroPortrait, 'hero portrait');
 // The intro lives in About. In development an unfinished video still shows its button.
 const showIntro = introVideoReady(home.about.introVideoId) || import.meta.env.DEV;
+
+// Extra stage height above the cube (fraction of its width). It slides up behind
+// the headline so the entrance drops in from behind the type without clipping.
+const HEADROOM = 0.6;
 ---
 
-<section class="hero wrap" id="top" aria-labelledby="hero-title">
+<section class="hero wrap" id="top" aria-labelledby="hero-title" style={`--cube-headroom:${HEADROOM}`}>
   <h1 class="title" id="hero-title">
     <span class="l1">{hero.greeting}</span>
     <span class="l2 serif">{hero.title}</span>
   </h1>
 
-  <div class="row">
-    <div class="side left">
-      <p class="pill available"><span class="status-dot" aria-hidden="true"></span>{hero.available}</p>
-      <p class="audience">{hero.audience}</p>
-    </div>
+  <div class="visual">
+    {portrait ? (
+      <IdentityCube
+        portrait={portrait.src}
+        portraitAlt={portrait.alt}
+        config={{ headroom: HEADROOM, intro: { enabled: true, from: 'top', duration: 2.2, restBeforeRotate: 2.4 } }}
+      />
+    ) : (
+      <div class="portrait-missing mono-label"><Placeholder text="[HERO_PORTRAIT]" /></div>
+    )}
+  </div>
 
-    <div class="portrait">
-      {portrait ? (
-        <Image
-          src={portrait.src}
-          alt={portrait.alt}
-          widths={[320, 420, 640, 840]}
-          sizes="(min-width: 760px) 420px, 280px"
-          format="webp"
-          quality={82}
-          loading="eager"
-          fetchpriority="high"
-        />
-      ) : (
-        <div class="portrait-missing mono-label"><Placeholder text="[HERO_PORTRAIT]" /></div>
+  <div class="side left">
+    <p class="pill available"><span class="status-dot" aria-hidden="true"></span>{hero.available}</p>
+    <p class="audience">{hero.audience}</p>
+  </div>
+
+  <div class="side right">
+    <p class="statement">{hero.statement}</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="#book" data-book>{hero.primaryCta}</a>
+      {showIntro && (
+        <a class="btn btn-secondary" href="#about">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M4 2.6v10.8a.8.8 0 0 0 1.2.7l8.6-5.4a.8.8 0 0 0 0-1.4L5.2 1.9A.8.8 0 0 0 4 2.6Z"></path></svg>
+          {hero.introCta}
+        </a>
       )}
-    </div>
-
-    <div class="side right">
-      <p class="statement">{hero.statement}</p>
-      <div class="actions">
-        <a class="btn btn-primary" href="#book" data-book>{hero.primaryCta}</a>
-        {showIntro && (
-          <a class="btn btn-secondary" href="#about">
-            <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M4 2.6v10.8a.8.8 0 0 0 1.2.7l8.6-5.4a.8.8 0 0 0 0-1.4L5.2 1.9A.8.8 0 0 0 4 2.6Z"></path></svg>
-            {hero.introCta}
-          </a>
-        )}
-      </div>
     </div>
   </div>
 </section>
 
 <style>
   .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'title' 'cube' 'right' 'left';
+    justify-items: center;
+    row-gap: 1.75rem;
     padding-top: clamp(1.5rem, 4vw, 3.5rem);
+    padding-bottom: clamp(2rem, 5vw, 4rem);
     text-align: center;
   }
 
   .title {
+    grid-area: title;
     position: relative;
-    z-index: 2;
+    z-index: 2; /* type always above the cube's stage */
     display: grid;
     justify-items: center;
     font-weight: 400;
@@ -79,28 +97,38 @@ const showIntro = introVideoReady(home.about.introVideoId) || import.meta.env.DE
     letter-spacing: -0.02em;
   }
 
-  .row {
+  .visual {
+    grid-area: cube;
+    position: relative;
+    z-index: 1;
+    --visual-w: min(100%, 470px);
+    width: var(--visual-w);
+    /* pull the stage's empty headroom up behind the headline. % margins resolve
+       against the grid area's width, so scale by the cube's own width instead */
+    margin-top: calc(-1 * (var(--cube-headroom) + 0.07) * var(--visual-w));
+  }
+  .portrait-missing {
     display: grid;
-    grid-template-columns: 1fr minmax(0, 420px) 1fr;
-    align-items: end;
-    gap: 2rem;
+    place-items: center;
+    aspect-ratio: 1;
+    margin-top: calc((var(--cube-headroom) + 0.07) * var(--visual-w));
+    border-radius: var(--radius-md);
+    background: var(--soft);
   }
 
   .side {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
-    padding-bottom: 2.5rem;
-    text-align: left;
+    align-items: center;
   }
   .left {
-    align-items: flex-start;
+    grid-area: left;
   }
   .right {
-    align-items: flex-start;
-    justify-self: end;
-  }
-  .right .statement {
-    max-width: 300px;
+    grid-area: right;
+    max-width: 34rem;
   }
 
   .available {
@@ -131,10 +159,16 @@ const showIntro = introVideoReady(home.about.introVideoId) || import.meta.env.DE
       transform: scale(2.6);
     }
   }
+  @media (prefers-reduced-motion: reduce) {
+    .status-dot::after {
+      animation: none;
+      opacity: 0;
+    }
+  }
 
   .audience {
-    max-width: 22ch;
-    margin-top: 7.5rem;
+    max-width: 30ch;
+    margin-top: 1rem;
     color: var(--muted);
     font-size: 0.9375rem;
   }
@@ -145,89 +179,52 @@ const showIntro = introVideoReady(home.about.introVideoId) || import.meta.env.DE
   }
   .actions {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 0.625rem;
+    width: 100%;
     margin-top: 1.5rem;
   }
+  .actions .btn {
+    width: 100%;
+  }
 
-  .portrait {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 420px;
-    margin-top: clamp(-5rem, -5vw, -2.5rem);
-    aspect-ratio: 4 / 5;
-    animation: portrait-in 900ms var(--ease-out) both;
-  }
-  .portrait :global(img) {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 50% 100%;
-  }
-  .portrait-missing {
-    display: grid;
-    place-items: center;
-    height: 100%;
-    border-radius: var(--radius-md) var(--radius-md) 0 0;
-    background: var(--soft);
-  }
-  @keyframes portrait-in {
-    from {
-      opacity: 0;
-      transform: translateY(24px);
+  @media (min-width: 960px) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr) minmax(400px, min(540px, 46vw)) minmax(0, 1fr);
+      grid-template-areas:
+        'title title title'
+        'left  cube  right';
+      column-gap: clamp(1.5rem, 3vw, 3rem);
+      align-items: end;
+      row-gap: 0;
+      text-align: left;
     }
-  }
-
-  @media (max-width: 959px) {
-    .row {
-      grid-template-columns: 1fr;
-      justify-items: center;
-      gap: 0;
+    .visual {
+      --visual-w: 100%;
+      margin-top: calc(-1 * (var(--cube-headroom) + 0.11) * var(--visual-w));
+    }
+    .side {
+      align-items: flex-start;
+      /* line up with the cube's base, above the face buttons */
+      padding-bottom: 5.5rem;
     }
     .left {
-      display: contents;
-    }
-    .portrait {
-      grid-row: 1;
-      grid-column: 1;
-      width: 280px;
-      margin-top: 1rem;
-    }
-    /* The pill floats over the portrait's left edge. */
-    .available {
-      grid-row: 1;
-      grid-column: 1;
-      z-index: 2;
       justify-self: start;
-      align-self: end;
-      margin-bottom: 22%;
-      margin-left: max(0px, calc(50% - 172px));
-      font-size: 0.875rem;
     }
     .right {
-      justify-self: stretch;
-      max-width: 34rem;
-      margin-inline: auto;
-      padding: 2rem 0 0;
-      text-align: center;
-      align-items: stretch;
-    }
-    .statement {
-      margin-inline: auto;
-    }
-    .actions {
-      flex-direction: column;
-    }
-    .actions .btn {
-      width: 100%;
+      justify-self: end;
+      max-width: 300px;
     }
     .audience {
-      grid-row: 3;
-      max-width: none;
-      margin: 1.5rem 0 2rem;
-      text-align: center;
+      max-width: 22ch;
+    }
+    .actions {
+      flex-direction: row;
+      flex-wrap: wrap;
+      width: auto;
+    }
+    .actions .btn {
+      width: auto;
     }
   }
 </style>

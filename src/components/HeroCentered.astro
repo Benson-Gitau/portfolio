@@ -1,0 +1,177 @@
+---
+/**
+ * Centred hero — same arrangement as the live site, with the Identity Cube
+ * where the portrait used to be. Copy is the site's existing hero copy.
+ *
+ *            Hi, I'm Benson
+ *       AI & Automation Specialist          ← headline sits above the cube
+ *   [chip]        ┌──────┐        statement
+ *   services      │ CUBE │        [Book a call] [Explore]
+ *   audience      └──────┘
+ *               face buttons
+ *
+ * The cube's stage reaches up behind the headline (headroom) so its entrance
+ * drops in from behind the type without being clipped. The headline stays on
+ * top and fully readable; at rest the cube sits just below it.
+ */
+import IdentityCube from './IdentityCube/IdentityCube.astro';
+import portrait from '../assets/photos/hero/heroPortrait/image.png';
+
+const HEADROOM = 0.6;
+---
+
+<section class="hero hero--center wrap" aria-labelledby="hero-title" style={`--cube-headroom:${HEADROOM}`}>
+  <h1 id="hero-title" class="hero__title">
+    <span class="l1">Hi, I'm Benson</span>
+    <span class="l2 serif">AI & Automation Specialist</span>
+  </h1>
+
+  <div class="hero__visual">
+    <IdentityCube portrait={portrait} config={{ headroom: HEADROOM, intro: { from: 'top' } }} />
+  </div>
+
+  <div class="hero__left">
+    <p class="hero__status"><span class="status-dot" aria-hidden="true"></span>Available for new projects</p>
+    <p class="hero__services">
+      Automation and AI voice systems that answer every call, follow up every lead and fill the calendar for med spas,
+      clinics, gyms and coaches.
+    </p>
+    <p class="audience">Building for clinics, studios and coaches in the US &amp; UK</p>
+  </div>
+
+  <div class="hero__right">
+    <p class="statement">
+      Every call answered. Every lead followed up. Every slot booked. I build the systems that make that true for your
+      practice.
+    </p>
+    <div class="hero__ctas">
+      <a class="btn btn-primary" href="#book">Book a 20-minute call</a>
+      <a class="btn hero__btn-secondary" href="#work">Explore My Work</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero--center {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'title' 'cube' 'right' 'left';
+    justify-items: center;
+    text-align: center;
+    row-gap: 1.75rem;
+    padding-block: clamp(2rem, 5vw, 4rem) clamp(3rem, 7vw, 6rem);
+  }
+
+  .hero__title {
+    grid-area: title;
+    position: relative;
+    z-index: 2; /* type always above the cube's stage */
+    margin: 0;
+    color: var(--ink);
+    line-height: 0.92;
+    font-weight: 400;
+  }
+  .hero__title .l1 {
+    display: block;
+    font-family: var(--font-geist);
+    font-size: clamp(2.5rem, 5.8vw, 5.25rem);
+    letter-spacing: -0.035em;
+  }
+  .hero__title .l2 {
+    display: block;
+    font-family: var(--font-instrument);
+    font-style: italic;
+    font-size: clamp(3rem, 9vw, 8.25rem);
+    letter-spacing: -0.02em;
+  }
+
+  .hero__visual {
+    grid-area: cube;
+    position: relative;
+    z-index: 1;
+    width: min(100%, 420px);
+    /* pull the stage's empty headroom up behind the headline;
+       % margins resolve against the grid area's width */
+    margin-top: calc(-1 * var(--cube-headroom) * 100% - 7%);
+  }
+
+  .hero__left,
+  .hero__right {
+    position: relative;
+    z-index: 2;
+    max-width: 40ch;
+  }
+  .hero__left { grid-area: left; }
+  .hero__right { grid-area: right; }
+
+  .hero__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    background: var(--card);
+    box-shadow: var(--shadow-chip);
+    font-size: 0.875rem;
+    color: var(--ink);
+  }
+  .status-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--status);
+  }
+  .hero__services {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .audience {
+    margin: 0.75rem 0 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .statement {
+    margin: 0;
+    font-size: clamp(1.05rem, 1.3vw, 1.2rem);
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  .hero__btn-secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid color-mix(in srgb, var(--ink) 25%, transparent);
+  }
+  .hero__btn-secondary:hover { border-color: var(--ink); }
+
+  @media (min-width: 960px) {
+    .hero--center {
+      grid-template-columns: minmax(0, 1fr) minmax(400px, 520px) minmax(0, 1fr);
+      grid-template-areas:
+        'title title title'
+        'left  cube  right';
+      column-gap: clamp(1.5rem, 3vw, 3rem);
+      align-items: end;
+      text-align: left;
+      row-gap: 0;
+    }
+    .hero__title { justify-self: center; text-align: center; }
+    .hero__visual { width: 100%; margin-top: calc(-1 * var(--cube-headroom) * 100% - 11%); }
+    .hero__left,
+    .hero__right {
+      align-self: end;
+      padding-bottom: 5.5rem; /* line up with the cube's base, above the face buttons */
+    }
+    .hero__left { justify-self: start; }
+    .hero__right { justify-self: end; }
+    .hero__ctas { justify-content: flex-start; }
+  }
+</style>

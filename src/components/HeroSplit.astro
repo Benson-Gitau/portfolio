@@ -1,0 +1,141 @@
+---
+/**
+ * Hero with the Identity Cube on the right.
+ * Copy below is the site's existing hero copy — nothing new was written.
+ * Swap this in for the current hero, or move the <IdentityCube> into your
+ * existing hero markup and borrow the grid rules from the <style> block.
+ */
+import IdentityCube from './IdentityCube/IdentityCube.astro';
+// Use the highest-resolution transparent cut-out you have (ideally ≥1200px).
+import portrait from '../assets/photos/hero/heroPortrait/image.png';
+---
+
+<section class="hero hero--split wrap" aria-labelledby="hero-title">
+  <div class="hero__copy">
+    <p class="hero__status"><span class="status-dot" aria-hidden="true"></span>Available for new projects</p>
+
+    <h1 id="hero-title" class="hero__title">
+      <span class="l1">Hi, I'm Benson</span>
+      <span class="l2 serif">AI & Automation Specialist</span>
+    </h1>
+
+    <p class="statement">
+      Every call answered. Every lead followed up. Every slot booked. I build the systems that make that true for your
+      practice.
+    </p>
+
+    <!-- Services line = the site's existing meta description -->
+    <p class="hero__services">
+      Automation and AI voice systems that answer every call, follow up every lead and fill the calendar for med spas,
+      clinics, gyms and coaches.
+    </p>
+
+    <p class="audience">Building for clinics, studios and coaches in the US &amp; UK</p>
+
+    <div class="hero__ctas">
+      <a class="btn btn-primary" href="#book">Book a 20-minute call</a>
+      <a class="btn hero__btn-secondary" href="#work">Explore My Work</a>
+    </div>
+  </div>
+
+  <div class="hero__visual">
+    <IdentityCube portrait={portrait} />
+  </div>
+</section>
+
+<style>
+  .hero--split {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+    padding-block: clamp(2.5rem, 7vw, 6rem) clamp(3rem, 8vw, 7rem);
+  }
+  @media (min-width: 960px) {
+    .hero--split {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    }
+  }
+
+  .hero__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    background: var(--card);
+    box-shadow: var(--shadow-chip);
+    font-size: 0.875rem;
+    color: var(--ink);
+  }
+  .status-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--status);
+  }
+
+  .hero__title {
+    margin: 1.25rem 0 0;
+    color: var(--ink);
+    line-height: 0.95;
+  }
+  .hero__title .l1 {
+    display: block;
+    font-family: var(--font-geist);
+    font-weight: 400;
+    font-size: clamp(2.25rem, 4.6vw, 4.25rem);
+    letter-spacing: -0.03em;
+  }
+  .hero__title .l2 {
+    display: block;
+    font-family: var(--font-instrument);
+    font-style: italic;
+    font-size: clamp(3rem, 6.6vw, 6.25rem);
+    letter-spacing: -0.02em;
+  }
+
+  .statement {
+    margin-top: 1.5rem;
+    max-width: 34ch;
+    font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .hero__services {
+    margin-top: 0.75rem;
+    max-width: 46ch;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .audience {
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+  .hero__btn-secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid color-mix(in srgb, var(--ink) 25%, transparent);
+  }
+  .hero__btn-secondary:hover {
+    border-color: var(--ink);
+  }
+
+  .hero__visual {
+    width: 100%;
+    max-width: 560px;
+    justify-self: center;
+  }
+  @media (max-width: 959px) {
+    .hero__visual {
+      max-width: min(420px, 92vw);
+    }
+  }
+</style>

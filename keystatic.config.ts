@@ -188,7 +188,7 @@ export default config({
         hero: fields.object(
           {
             greeting: text('Title line 1', 'Geist, for example "Hi, I’m Benson".'),
-            title: text('Title line 2', 'Serif italic, for example "Automation Consultant".'),
+            title: text('Title line 2', 'Serif italic, for example "AI & Automation Specialist".'),
             heroPortrait: image('Cut-out portrait', 'src/assets/photos'),
             available: text('Available pill'),
             audience: text('Audience line'),
@@ -310,7 +310,7 @@ export default config({
             { label: 'Teal', value: 'teal' },
             { label: 'Midnight', value: 'midnight' },
           ],
-          defaultValue: 'forest',
+          defaultValue: 'lime',
         }),
         ghlCalendarEmbedUrl: text('GoHighLevel calendar embed URL'),
         ghlEmbedScriptUrl: text('GoHighLevel embed script URL', 'Optional. The script src from the calendar embed code. Loads only with the calendar.'),

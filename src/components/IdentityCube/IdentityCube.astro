@@ -1,0 +1,94 @@
+---
+/**
+ * <IdentityCube portrait={portraitImport} />
+ *
+ * Interactive 3D personal-brand cube. All copy, links, colours and timing are
+ * in ./config.ts and can be overridden per use through the `config` prop.
+ */
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
+import { mergeConfig, type CubeConfigInput } from './config';
+import './identity-cube.css';
+
+interface Props {
+  /** Transparent-background cut-out portrait (import it from src/assets) */
+  portrait: ImageMetadata;
+  /** Alt text describing the portrait */
+  portraitAlt?: string;
+  config?: CubeConfigInput;
+  class?: string;
+}
+
+const {
+  portrait,
+  portraitAlt = 'Benson Gitau smiling, in a dark suit and glasses',
+  config = {},
+  class: className,
+} = Astro.props;
+
+// Texture source: big enough to stay sharp on a 2048px face, still WebP-light
+const texture = await getImage({ src: portrait, width: Math.min(portrait.width, 1400), format: 'webp', quality: 88 });
+// Poster: what visitors see instantly while three.js loads in the background
+const poster = await getImage({ src: portrait, width: Math.min(portrait.width, 640), format: 'webp', quality: 80 });
+
+const cfg = mergeConfig({ ...config, portraitSrc: texture.src });
+// Colours come from the site's palette tokens (identity-cube.css + mount.ts);
+// only an explicit `config.palette` override is pinned inline.
+const style = config.palette
+  ? `--icube-ink:${cfg.palette.ink};--icube-accent:${cfg.palette.accent}`
+  : undefined;
+---
+
+<div
+  class:list={['icube', className]}
+  style={style}
+  data-identity-cube
+  data-config={JSON.stringify(cfg)}
+  data-palette-pinned={config.palette ? '' : undefined}
+  role="group"
+  aria-roledescription="interactive profile cube"
+  aria-label={`${cfg.name} — profile`}
+>
+  <div class="icube__stage" data-cube-stage style={`aspect-ratio: 1 / ${1 + Math.max(0, cfg.headroom)}`}>
+    <div class="icube__poster" data-cube-poster aria-hidden="true">
+      <img src={poster.src} width={poster.attributes.width} height={poster.attributes.height} alt="" fetchpriority="high" decoding="async" />
+      <span class="icube__poster-text">
+        <span class="icube__poster-name">{cfg.name}</span>
+        <span class="icube__poster-role">{cfg.role}</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="icube__controls">
+    <div class="icube__tabs" role="group" aria-label="Choose a cube face">
+      {cfg.faces.map((f, i) => (
+        <button type="button" class="icube__btn" data-face-btn={i} aria-pressed={i === 0 ? 'true' : 'false'}>
+          {f.label}
+        </button>
+      ))}
+    </div>
+    <button type="button" class="icube__pause" data-cube-pause aria-pressed="false" aria-label="Pause cube rotation">
+      <svg class="i-pause" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="3" y="2" width="3" height="10" rx="1" fill="currentColor" /><rect x="8" y="2" width="3" height="10" rx="1" fill="currentColor" /></svg>
+      <svg class="i-play" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M4 2.5v9l7.5-4.5z" fill="currentColor" /></svg>
+    </button>
+  </div>
+
+  <!-- Everything printed on the cube, for screen readers and search engines -->
+  <div class="icube-sr">
+    <p>{portraitAlt}. {cfg.name}, {cfg.role}.</p>
+    {cfg.faces.slice(1).map((f) => (
+      <>
+        <p>{f.label}{f.headline ? ` — ${f.headline}` : ''}</p>
+        <ul>{f.items.map((it) => <li>{it}</li>)}</ul>
+      </>
+    ))}
+  </div>
+  <p class="icube-sr" aria-live="polite" data-cube-live></p>
+</div>
+
+<script>
+  import { mountAll } from './mount';
+  mountAll();
+  // Astro view transitions (if enabled later)
+  document.addEventListener('astro:page-load', mountAll);
+</script>
